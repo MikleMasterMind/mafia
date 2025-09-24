@@ -4,21 +4,21 @@
 #include <utility>
 
 template <typename T>
-class SharedPtr {
+class TSharedPtr {
 public:
-    SharedPtr() noexcept
+    TSharedPtr() noexcept
         : ptr_(nullptr)
         , ref_count_(nullptr)
     {
     }
 
-    explicit SharedPtr(T* ptr)
+    explicit TSharedPtr(T* ptr)
         : ptr_(ptr)
         , ref_count_(ptr ? new size_t(1) : nullptr)
     {
     }
 
-    SharedPtr(const SharedPtr& other) noexcept
+    TSharedPtr(const TSharedPtr& other) noexcept
         : ptr_(other.ptr_)
         , ref_count_(other.ref_count_)
     {
@@ -27,7 +27,7 @@ public:
         }
     }
 
-    SharedPtr(SharedPtr&& other) noexcept
+    TSharedPtr(TSharedPtr&& other) noexcept
         : ptr_(other.ptr_)
         , ref_count_(other.ref_count_)
     {
@@ -35,11 +35,11 @@ public:
         other.ref_count_ = nullptr;
     }
 
-    ~SharedPtr() {
+    ~TSharedPtr() {
         release();
     }
 
-    SharedPtr& operator=(const SharedPtr& other) noexcept {
+    TSharedPtr& operator=(const TSharedPtr& other) noexcept {
         if (this != &other) {
             release();
             ptr_ = other.ptr_;
@@ -51,7 +51,7 @@ public:
         return *this;
     }
 
-    SharedPtr& operator=(SharedPtr&& other) noexcept {
+    TSharedPtr& operator=(TSharedPtr&& other) noexcept {
         if (this != &other) {
             release();
             ptr_ = other.ptr_;
@@ -97,7 +97,7 @@ public:
         ref_count_ = ptr ? new size_t(1) : nullptr;
     }
 
-    void swap(SharedPtr& other) noexcept {
+    void swap(TSharedPtr& other) noexcept {
         using std::swap;
         swap(ptr_, other.ptr_);
         swap(ref_count_, other.ref_count_);
@@ -120,61 +120,61 @@ private:
 };
 
 template <typename T, typename U>
-bool operator==(const SharedPtr<T>& lhs, const SharedPtr<U>& rhs) {
+bool operator==(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
     return lhs.get() == rhs.get();
 }
 
 template <typename T, typename U>
-bool operator!=(const SharedPtr<T>& lhs, const SharedPtr<U>& rhs) {
+bool operator!=(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
     return !(lhs == rhs);
 }
 
 template <typename T>
-bool operator==(const SharedPtr<T>& lhs, std::nullptr_t) {
+bool operator==(const TSharedPtr<T>& lhs, std::nullptr_t) {
     return lhs.get() == nullptr;
 }
 
 template <typename T>
-bool operator==(std::nullptr_t, const SharedPtr<T>& rhs) {
+bool operator==(std::nullptr_t, const TSharedPtr<T>& rhs) {
     return rhs.get() == nullptr;
 }
 
 template <typename T>
-bool operator!=(const SharedPtr<T>& lhs, std::nullptr_t) {
+bool operator!=(const TSharedPtr<T>& lhs, std::nullptr_t) {
     return lhs.get() != nullptr;
 }
 
 template <typename T>
-bool operator!=(std::nullptr_t, const SharedPtr<T>& rhs) {
+bool operator!=(std::nullptr_t, const TSharedPtr<T>& rhs) {
     return rhs.get() != nullptr;
 }
 
 template <typename T, typename U>
-bool operator<(const SharedPtr<T>& lhs, const SharedPtr<U>& rhs) {
+bool operator<(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
     return lhs.get() < rhs.get();
 }
 
 template <typename T, typename U>
-bool operator>(const SharedPtr<T>& lhs, const SharedPtr<U>& rhs) {
+bool operator>(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
     return rhs < lhs;
 }
 
 template <typename T, typename U>
-bool operator<=(const SharedPtr<T>& lhs, const SharedPtr<U>& rhs) {
+bool operator<=(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
     return !(rhs < lhs);
 }
 
 template <typename T, typename U>
-bool operator>=(const SharedPtr<T>& lhs, const SharedPtr<U>& rhs) {
+bool operator>=(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
     return !(lhs < rhs);
 }
 
 template <typename T>
-void swap(SharedPtr<T>& lhs, SharedPtr<T>& rhs) noexcept {
+void swap(TSharedPtr<T>& lhs, TSharedPtr<T>& rhs) noexcept {
     lhs.swap(rhs);
 }
 
 template <typename T, typename... Args>
-SharedPtr<T> make_shared(Args&&... args) {
-    return SharedPtr<T>(new T(std::forward<Args>(args)...));
+TSharedPtr<T> make_shared(Args&&... args) {
+    return TSharedPtr<T>(new T(std::forward<Args>(args)...));
 }
