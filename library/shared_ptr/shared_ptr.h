@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <utility>
+#include <mutex>
 
 template <typename T>
 class TSharedPtr {
@@ -23,6 +24,7 @@ public:
         , ref_count_(other.ref_count_)
     {
         if (ref_count_) {
+            std::lock_guard<std::mutex> lock(mutex_);
             ++(*ref_count_);
         }
     }
@@ -45,6 +47,7 @@ public:
             ptr_ = other.ptr_;
             ref_count_ = other.ref_count_;
             if (ref_count_) {
+                std::lock_guard<std::mutex> lock(mutex_);
                 ++(*ref_count_);
             }
         }
@@ -79,6 +82,7 @@ public:
     }
 
     size_t use_count() const noexcept {
+        std::lock_guard<std::mutex> lock(mutex_);
         return ref_count_ ? *ref_count_ : 0;
     }
 
@@ -98,6 +102,7 @@ public:
     }
 
     void swap(TSharedPtr& other) noexcept {
+        std::lock_guard<std::mutex> lock(mutex_);
         using std::swap;
         swap(ptr_, other.ptr_);
         swap(ref_count_, other.ref_count_);
@@ -106,6 +111,7 @@ public:
 private:
     void release() {
         if (ref_count_) {
+            std::lock_guard<std::mutex> lock(mutex_);
             --(*ref_count_);
             if (*ref_count_ == 0) {
                 delete ptr_;
@@ -117,6 +123,7 @@ private:
 private:
     T* ptr_;
     size_t* ref_count_;
+    mutable std::mutex mutex_;
 };
 
 template <typename T, typename U>
