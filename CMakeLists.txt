@@ -4,9 +4,14 @@ project(mafia LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_compile_options(-std=c++20)
+
 add_executable(mafia
     main.cpp
     library/shared_ptr/shared_ptr.cpp
+    library/unique_number_generator/unique_number_generator.cpp
+    game_classes/library/messages_queue.cpp
+    game_classes/players/player_base.cpp
 )
 
 add_custom_target(clean-build
