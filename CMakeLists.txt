@@ -11,7 +11,9 @@ add_executable(mafia
     library/shared_ptr/shared_ptr.cpp
     library/unique_number_generator/unique_number_generator.cpp
     library/json/json.cpp
+    library/logger/logger.cpp
     game_classes/library/messages_queue.cpp
+    game_classes/library/roles_enum.cpp
     game_classes/players/player_base.cpp
     game_classes/players/player_playable.cpp
     game_classes/players/player_civilian.cpp

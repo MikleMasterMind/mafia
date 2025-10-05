@@ -4,7 +4,6 @@
 #include <ranges>
 #include <random>
 #include <algorithm>
-#include "../../library/logger/logger.h"
 
 
 namespace NMafia {
@@ -17,10 +16,13 @@ namespace NMafia {
         auto target = ChooseTargretToVoite();
         WriteMsgByRole(
             {
-                {"message", "Voite again "},
+                {"message", "Voite again"},
                 {"id", target->GetId()},
             },
             ERoles::Default
+        );
+        TLogger::multiLog(LogPaths,
+            "Player " + GetId() + " voite again " + target->GetId()
         );
     }
 
@@ -38,7 +40,9 @@ namespace NMafia {
         std::vector<Id> suspiciousPlayers;
         std::ranges::copy(
             ids | std::views::filter([this, threshold](const Id& id) {
-                return TrustTable[id] <= threshold;
+                return (TrustTable[id] <= threshold)
+                    && (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
+                    && (id != GetId());
             }),
             std::back_inserter(suspiciousPlayers)
         );
@@ -56,10 +60,16 @@ namespace NMafia {
     }
 
     void TPlayerPlayable::ProcessSingleMessage(const TMessage &msg) {
-        if (msg.Body.Contains("Voite again")) {
+        TLogger::multiLog(LogPaths,
+            "Player " + GetId() + " got message " + msg.Body.ToString() + " from " + msg.Src
+        );
+        if (msg.Body.Contains("message") && msg.Body.Get("message") == "Voite again") {
             Id extractedId = msg.Body.Get("id");
             if (extractedId == GetId()) {
                 TrustTable[msg.Src] -= 5;
+                TLogger::multiLog(LogPaths,
+                    "Player now trust to " + msg.Src + " like " + std::to_string(TrustTable[msg.Src])
+                );
             }
         }
     }

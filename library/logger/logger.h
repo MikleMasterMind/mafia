@@ -6,69 +6,77 @@
 #include <map>
 #include <mutex>
 #include <iostream>
-
+#include <vector>
 
 namespace NMafia {
 
     namespace fs = std::filesystem;
 
-    class Logger {
+    class TLogger {
     private:
-        static std::map<fs::path, Logger*> instances;
-        static std::mutex mutex;
-        std::ofstream fileStream;
-        fs::path filePath;
+        static std::map<fs::path, TLogger*> Instance;
+        static std::mutex InstanceMutex;
+        static std::mutex WriteMutex;
+        std::ofstream FileStream;
+        fs::path FilePath;
 
-        Logger(const fs::path& path) : filePath(path) {
+        TLogger(const fs::path& path) : FilePath(path) {
             try {
-                if (!fs::exists(filePath.parent_path())) {
-                    fs::create_directories(filePath.parent_path());
+                if (!fs::exists(FilePath.parent_path())) {
+                    fs::create_directories(FilePath.parent_path());
                 }
 
-                fileStream.open(filePath, std::ios::app);
-                if (!fileStream.is_open()) {
-                    std::cerr << "Ошибка открытия файла " << filePath << std::endl;
+                FileStream.open(FilePath, std::ios::app);
+                if (!FileStream.is_open()) {
+                    std::cerr << "Ошибка открытия файла " << FilePath << std::endl;
                 }
             } catch (const fs::filesystem_error& ex) {
                 std::cerr << "Ошибка работы с файловой системой: " << ex.what() << std::endl;
             }
         }
 
-        Logger(const Logger&) = delete;
-        Logger& operator=(const Logger&) = delete;
+        TLogger(const TLogger&) = delete;
+        TLogger& operator=(const TLogger&) = delete;
 
     public:
-        static Logger* getInstance(const fs::path& path) {
-            std::lock_guard<std::mutex> lock(mutex);
+        static TLogger* getInstance(const fs::path& path) {
+            std::unique_lock<std::mutex> lock(InstanceMutex);
 
-            if (instances.find(path) == instances.end()) {
-                instances[path] = new Logger(path);
+            if (Instance.find(path) == Instance.end()) {
+                Instance[path] = new TLogger(path);
             }
-            return instances[path];
+            return Instance[path];
         }
 
         void log(const std::string& message) {
-            if (fileStream.is_open()) {
-                fileStream << message << std::endl;
+            std::unique_lock lock(WriteMutex);
+            if (FileStream.is_open()) {
+                FileStream << message << std::endl;
+            }
+        }
+
+        static void multiLog(const std::vector<fs::path>& paths, const std::string& message) {
+            for (const auto& path : paths) {
+                TLogger* logger = getInstance(path);
+                if (logger) {
+                    logger->log(message);
+                }
             }
         }
 
         static void destroyAll() {
-            std::lock_guard<std::mutex> lock(mutex);
+            std::unique_lock<std::mutex> lock(InstanceMutex);
 
-            for (auto& pair : instances) {
+            for (auto& pair : Instance) {
                 delete pair.second;
             }
-            instances.clear();
+            Instance.clear();
         }
 
-        ~Logger() {
-            if (fileStream.is_open()) {
-                fileStream.close();
+        ~TLogger() {
+            if (FileStream.is_open()) {
+                FileStream.close();
             }
         }
     };
-
-    std::map<fs::path, Logger*> Logger::instances = {};
-    std::mutex Logger::mutex;
 }

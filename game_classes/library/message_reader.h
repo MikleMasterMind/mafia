@@ -7,15 +7,23 @@
 namespace NMafia {
     class TMessageReader {
     public:
-        TMessageReader(const TSharedPtr<TMessagesQueue>& queue) : Queue(queue) {}
+        TMessageReader(const TSharedPtr<TMessagesQueue>& queue)
+        : Queue(queue)
+        , KeepProcessing(true)
+        {}
 
         void StartProcessing() {
             ProcessMessages();
         }
 
+        void StopProcessing() {
+            KeepProcessing = false;
+            Queue->Write({});
+        }
+
     protected:
         void ProcessMessages() {
-            while (true) {
+            while (KeepProcessing) {
                 TMessage message = Queue->Read();
                 if (!message.Body.Size()) {
                     continue;
@@ -27,5 +35,6 @@ namespace NMafia {
         virtual void ProcessSingleMessage(const TMessage& msg) = 0;
 
         TSharedPtr<TMessagesQueue> Queue;
+        bool KeepProcessing;
     };
 }

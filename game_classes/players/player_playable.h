@@ -10,9 +10,15 @@ namespace NMafia {
         TPlayerPlayable(
             const TSharedPtr<TMessagesQueue>& queuePtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
+            const std::vector<fs::path>& logPaths,
             const std::set<ERoles>& roles
         )
-        : TPlayerBase(roles, queuePtr, idToPlayerPtr)
+        : TPlayerBase(
+            roles,
+            queuePtr,
+            idToPlayerPtr,
+            logPaths
+        )
         , Status(EStatus::Alive)
         {
             for (const auto& [id, player] : *IdToPlayerPtr) {

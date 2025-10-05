@@ -10,6 +10,7 @@
 #include "../library/message_writer.h"
 #include "../../library/shared_ptr/shared_ptr.h"
 #include "../../library/unique_number_generator/unique_number_generator.h"
+#include "../../library/logger/logger.h"
 
 
 namespace NMafia {
@@ -38,14 +39,20 @@ namespace NMafia {
         TPlayerBase(
             const std::set<ERoles>& roles,
             const TSharedPtr<TMessagesQueue>& queuePtr,
-            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
+            const std::vector<fs::path>& logPaths
         )
             : TMessageReader(queuePtr)
             , PersonChatPtr(queuePtr)
             , Roles(roles)
             , IdToPlayerPtr(idToPlayerPtr)
             , PersonId(std::to_string(UniqueNumberGenerator::getInstance().getUniqueNumber()))
-        {};
+            , LogPaths(logPaths)
+        {
+            TLogger::multiLog(logPaths,
+                "Initialize player role: " + RolesToString(GetRoles()) + " Id: " + GetId()
+            );
+        };
 
         TPlayerBase(const TPlayerBase& other)
             : TMessageReader(other.Queue)
@@ -53,7 +60,11 @@ namespace NMafia {
             , Roles(other.Roles)
             , IdToPlayerPtr(other.IdToPlayerPtr)
             , PersonId(other.PersonId)
-        {};
+        {
+            TLogger::multiLog(LogPaths,
+                "Initialize player role: " + RolesToString(GetRoles()) + " Id: " + GetId()
+            );
+        };
 
         virtual ~TPlayerBase() = default;
 
@@ -67,6 +78,20 @@ namespace NMafia {
 
         Id GetId() const {
             return PersonId;
+        }
+
+        void StartProcessing() {
+            TLogger::multiLog(LogPaths,
+                "Player " + GetId() + " starting processing input messages"
+            );
+            TMessageReader::StartProcessing();
+        }
+
+        void StopProcessing() {
+            TLogger::multiLog(LogPaths,
+                "Player " + GetId() + " stopping processing input messages"
+            );
+            TMessageReader::StopProcessing();
         }
 
         virtual PlayerAction DayAction() = 0;
@@ -85,5 +110,6 @@ namespace NMafia {
         std::set<ERoles> Roles;
         TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>> IdToPlayerPtr;
         Id PersonId;
+        std::vector<fs::path> LogPaths;
     };
 }

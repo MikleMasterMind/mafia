@@ -17,23 +17,46 @@ namespace NMafia {
 
     PlayerAction TPlayerSheriff::NigthAction() {
         if (getRandomBool()) {
-            auto target = ChooseTargetToKill();
-            if (target->GetStatus() == EStatus::Alive) {
-                target->SetStatus(EStatus::Dead);
-            }
+            Kill();
         } else {
-            auto target = ChooseTargetToCheck();
-            auto targetRoles = target->GetRoles();
-            if (targetRoles.find(ERoles::Mafia) != targetRoles.end()) {
-                TrustTable[target->GetId()] -= 50;
-            } else {
-                TrustTable[target->GetId()] += 50;
-            }
+            Check();
         }
         co_return;
     }
 
-    TSharedPtr<TPlayerBase> TPlayerSheriff::ChooseTargetToKill() {
+    void TPlayerSheriff::Kill() {
+        auto target = ChooseTargetToKill();
+        TLogger::multiLog(LogPaths,
+            "Sheriff wants to kill " + target->GetId()
+        );
+        if (target->GetStatus() == EStatus::Alive) {
+            target->SetStatus(EStatus::Dead);
+        }
+    }
+
+    void TPlayerSheriff::Check() {
+        auto target = ChooseTargetToCheck();
+        if (!target) {
+            Kill();
+            return;
+        }
+        auto targetRoles = target->GetRoles();
+        CheckedIds.insert(target->GetId());
+        TLogger::multiLog(LogPaths,
+            "Sheriff " + GetId() + " checks " + target->GetId()
+        );
+        if (targetRoles.find(ERoles::Mafia) != targetRoles.end()) {
+            TrustTable[target->GetId()] -= 50;
+        } else {
+            TrustTable[target->GetId()] += 50;
+        }
+        TLogger::multiLog(LogPaths,
+            "Sheriff " + GetId() + "now trust to " + target->GetId() + " like " + std::to_string(TrustTable[target->GetId()])
+        );
+    }
+
+    TSharedPtr<TPlayerBase> TPlayerSheriff::ChooseTargetToKill()
+    {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
 
@@ -46,7 +69,9 @@ namespace NMafia {
         std::vector<Id> suspiciousPlayers;
         std::ranges::copy(
             ids | std::views::filter([this, minTrust](const Id& id) {
-                return TrustTable[id] == minTrust;
+                return (TrustTable[id] == minTrust)
+                    && (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
+                    && (id != GetId());
             }),
             std::back_inserter(suspiciousPlayers)
         );
@@ -78,7 +103,11 @@ namespace NMafia {
         std::vector<Id> suspiciousPlayers;
         std::ranges::copy(
             ids | std::views::filter([&, this](const Id& id) {
-                return (TrustTable[id] <= upThreshold) && (TrustTable[id] >= downThreshold);
+                return (TrustTable[id] <= upThreshold)
+                    && (TrustTable[id] >= downThreshold)
+                    && (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
+                    && (CheckedIds.find(id) == CheckedIds.end())
+                    && (id != GetId());
             }),
             std::back_inserter(suspiciousPlayers)
         );
@@ -87,11 +116,10 @@ namespace NMafia {
         std::mt19937 gen(rd());
         Id choosenId;
         if (suspiciousPlayers.empty()) {;
-            choosenId = ids[std::uniform_int_distribution<>(0, ids.size() - 1)(gen)];
+            return TSharedPtr<TPlayerBase>();
         } else {
             choosenId = suspiciousPlayers[std::uniform_int_distribution<>(0, suspiciousPlayers.size() - 1)(gen)];
+            return IdToPlayerPtr->at(choosenId);
         }
-
-        return IdToPlayerPtr->at(choosenId);
     }
 }

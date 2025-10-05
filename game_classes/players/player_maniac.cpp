@@ -9,6 +9,9 @@
 namespace NMafia {
     PlayerAction TPlayerManiac::NigthAction() {
         auto target = ChooseTargetToKill();
+        TLogger::multiLog(LogPaths,
+            "Sheriff wants to kill " + target->GetId()
+        );
         if (target->GetStatus() == EStatus::Alive) {
             target->SetStatus(EStatus::Dead);
         }
@@ -17,7 +20,12 @@ namespace NMafia {
 
     TSharedPtr<TPlayerBase> TPlayerManiac::ChooseTargetToKill() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
+                return (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
+                    && (id != GetId());
+            }),
+            std::back_inserter(ids)
+        );
 
         std::random_device rd;
         std::mt19937 gen(rd());

@@ -10,6 +10,9 @@ namespace NMafia {
     PlayerAction TPlayerDoctor::NigthAction() {
         auto target = ChooseTargetToHeal();
         auto targetStatus = target->GetStatus();
+        TLogger::multiLog(LogPaths,
+            "Doctor wants to heal " + target->GetId()
+        );
         if (targetStatus == EStatus::Alive || targetStatus == EStatus::Dead) {
             target->SetStatus(EStatus::Protected);
         }
@@ -18,7 +21,10 @@ namespace NMafia {
 
     TSharedPtr<TPlayerBase> TPlayerDoctor::ChooseTargetToHeal() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
+                return IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead;}),
+            std::back_inserter(ids)
+        );
 
         std::random_device rd;
         std::mt19937 gen(rd());
