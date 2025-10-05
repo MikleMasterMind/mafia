@@ -4,6 +4,7 @@
 #include <string>
 #include <set>
 #include <unordered_map>
+#include <coroutine>
 #include "../library/roles_enum.h"
 #include "../library/message_reader.h"
 #include "../library/message_writer.h"
@@ -12,6 +13,26 @@
 
 
 namespace NMafia {
+    struct PlayerAction {
+        struct promise_type {
+            PlayerAction get_return_object() {
+                return PlayerAction{std::coroutine_handle<promise_type>::from_promise(*this)};
+            }
+            std::suspend_always initial_suspend() { return {}; }
+            std::suspend_always final_suspend() noexcept { return {}; }
+            void return_void() {}
+            void unhandled_exception() {}
+        };
+        std::coroutine_handle<promise_type> handle;
+        ~PlayerAction() { handle.destroy(); }
+    };
+
+    enum EStatus {
+        Alive,
+        Protected,
+        Dead,
+    };
+
     class TPlayerBase : public TMessageReader, public TMessageWriter {
     public:
         TPlayerBase(
@@ -47,6 +68,13 @@ namespace NMafia {
         Id GetId() const {
             return PersonId;
         }
+
+        virtual PlayerAction DayAction() = 0;
+        virtual PlayerAction NigthAction() = 0;
+
+        virtual EStatus GetStatus() const = 0;
+
+        virtual void SetStatus(EStatus status) = 0;
 
     protected:
         void WriteMsgById(const TJsonMap& msg, Id id);

@@ -33,9 +33,9 @@ namespace NMafia {
         co_return;
     }
 
-    TSharedPtr<TPlayerPlayable> TPlayerSheriff::ChooseTargetToKill() {
+    TSharedPtr<TPlayerBase> TPlayerSheriff::ChooseTargetToKill() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPlayablePtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {
@@ -56,15 +56,15 @@ namespace NMafia {
             std::mt19937 gen(rd());
             Id choosenId;
             choosenId = suspiciousPlayers[std::uniform_int_distribution<>(0, suspiciousPlayers.size() - 1)(gen)];
-            return IdToPlayerPlayablePtr->at(choosenId);
+            return IdToPlayerPtr->at(choosenId);
         } else {
-            return IdToPlayerPlayablePtr->at(suspiciousPlayers[0]);
+            return IdToPlayerPtr->at(suspiciousPlayers[0]);
         }
     }
 
-    TSharedPtr<TPlayerPlayable> TPlayerSheriff::ChooseTargetToCheck() {
+    TSharedPtr<TPlayerBase> TPlayerSheriff::ChooseTargetToCheck() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPlayablePtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
 
         auto range = ids | std::views::transform([this](const Id& id) {
             return TrustTable[id];
@@ -92,6 +92,6 @@ namespace NMafia {
             choosenId = suspiciousPlayers[std::uniform_int_distribution<>(0, suspiciousPlayers.size() - 1)(gen)];
         }
 
-        return IdToPlayerPlayablePtr->at(choosenId);
+        return IdToPlayerPtr->at(choosenId);
     }
 }

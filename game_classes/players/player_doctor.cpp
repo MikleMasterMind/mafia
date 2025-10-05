@@ -16,9 +16,9 @@ namespace NMafia {
         co_return;
     }
 
-    TSharedPtr<TPlayerPlayable> TPlayerDoctor::ChooseTargetToHeal() {
+    TSharedPtr<TPlayerBase> TPlayerDoctor::ChooseTargetToHeal() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPlayablePtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -28,6 +28,6 @@ namespace NMafia {
         }
         PrevPacientId = choosenId;
 
-        return IdToPlayerPlayablePtr->at(choosenId);
+        return IdToPlayerPtr->at(choosenId);
     }
 }

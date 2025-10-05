@@ -4,6 +4,7 @@
 #include <ranges>
 #include <random>
 #include <algorithm>
+#include "../../library/logger/logger.h"
 
 
 namespace NMafia {
@@ -23,9 +24,9 @@ namespace NMafia {
         );
     }
 
-    TSharedPtr<TPlayerPlayable> TPlayerPlayable::ChooseTargretToVoite() {
+    TSharedPtr<TPlayerBase> TPlayerPlayable::ChooseTargretToVoite() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPlayablePtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {
@@ -51,7 +52,7 @@ namespace NMafia {
             choosenId = suspiciousPlayers[std::uniform_int_distribution<>(0, suspiciousPlayers.size() - 1)(gen)];
         }
 
-        return IdToPlayerPlayablePtr->at(choosenId);
+        return IdToPlayerPtr->at(choosenId);
     }
 
     void TPlayerPlayable::ProcessSingleMessage(const TMessage &msg) {
