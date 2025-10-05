@@ -10,8 +10,12 @@ add_executable(mafia
     main.cpp
     library/shared_ptr/shared_ptr.cpp
     library/unique_number_generator/unique_number_generator.cpp
+    library/json/json.cpp
     game_classes/library/messages_queue.cpp
     game_classes/players/player_base.cpp
+    game_classes/players/player_playable.cpp
+    game_classes/players/player_civilian.cpp
+    game_classes/players/player_doctor.cpp
 )
 
 add_custom_target(clean-build

@@ -31,12 +31,17 @@ namespace NMafia {
         TPlayerPlayable(
             const std::set<ERoles>& roles,
             const TSharedPtr<TMessagesQueue>& queuePtr,
-            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr)
-        : TPlayerBase(roles, queuePtr, idToPlayerPtr)
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerPlayable>>>& idToPlayerPlayablePtr)
+        : IdToPlayerPlayablePtr(idToPlayerPlayablePtr)
+        , TPlayerBase(roles, queuePtr, idToPlayerPtr)
         , Status(EStatus::Alive)
         {
             for (const auto& [id, player] : *IdToPlayerPtr) {
-                TrustTable[id] = 0;
+                auto roles = player->GetRoles();
+                if (roles.find(ERoles::Leader) == roles.end()) {
+                    TrustTable[id] = 0;
+                }
             }
         }
 
@@ -60,6 +65,7 @@ namespace NMafia {
         virtual void ProcessSingleMessage(const TMessage& msg) override;
 
     protected:
+        TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerPlayable>>> IdToPlayerPlayablePtr;
         std::unordered_map<Id, int> TrustTable;
         EStatus Status;
     };
