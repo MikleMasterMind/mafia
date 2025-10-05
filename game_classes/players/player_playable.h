@@ -29,10 +29,11 @@ namespace NMafia {
     class TPlayerPlayable : public TPlayerBase {
     public:
         TPlayerPlayable(
-            const std::set<ERoles>& roles,
             const TSharedPtr<TMessagesQueue>& queuePtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerPlayable>>>& idToPlayerPlayablePtr)
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerPlayable>>>& idToPlayerPlayablePtr,
+            const std::set<ERoles>& roles
+        )
         : IdToPlayerPlayablePtr(idToPlayerPlayablePtr)
         , TPlayerBase(roles, queuePtr, idToPlayerPtr)
         , Status(EStatus::Alive)

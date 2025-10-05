@@ -4,13 +4,15 @@
 #include <ranges>
 #include <random>
 #include <algorithm>
-#include <regex>
 
 
 namespace NMafia {
     PlayerAction TPlayerDoctor::NigthAction() {
         auto target = ChooseTargetToHeal();
-        target->SetStatus(EStatus::Protected);
+        auto targetStatus = target->GetStatus();
+        if (targetStatus == EStatus::Alive || targetStatus == EStatus::Dead) {
+            target->SetStatus(EStatus::Protected);
+        }
         co_return;
     }
 

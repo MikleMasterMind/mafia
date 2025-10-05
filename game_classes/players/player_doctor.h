@@ -9,15 +9,17 @@ namespace NMafia {
         TPlayerDoctor(
             const TSharedPtr<TMessagesQueue>& queuePtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerPlayable>>>& idToPlayerPlayablePtr)
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerPlayable>>>& idToPlayerPlayablePtr,
+            const std::set<ERoles>& /* roles */
+        )
         : TPlayerPlayable(
+            queuePtr,
+            idToPlayerPtr,
+            idToPlayerPlayablePtr,
             {
                 ERoles::Peacefull,
                 ERoles::Doctor
-            },
-            queuePtr,
-            idToPlayerPtr,
-            idToPlayerPlayablePtr
+            }
         )
         {}
 

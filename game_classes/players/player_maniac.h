@@ -4,9 +4,9 @@
 
 
 namespace NMafia {
-    class TPlayerSheriff : public TPlayerPlayable {
+    class TPlayerManiac : public TPlayerPlayable {
     public:
-        TPlayerSheriff(
+        TPlayerManiac(
             const TSharedPtr<TMessagesQueue>& queuePtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerPlayable>>>& idToPlayerPlayablePtr,
@@ -26,6 +26,5 @@ namespace NMafia {
 
     protected:
         TSharedPtr<TPlayerPlayable> ChooseTargetToKill();
-        TSharedPtr<TPlayerPlayable> ChooseTargetToCheck();
     };
 }
