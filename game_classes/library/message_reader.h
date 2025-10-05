@@ -17,7 +17,7 @@ namespace NMafia {
         void ProcessMessages() {
             while (true) {
                 TMessage message = Queue->Read();
-                if (!message.Body.size()) {
+                if (!message.Body.Size()) {
                     continue;
                 }
                 ProcessSingleMessage(message);

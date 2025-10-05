@@ -36,9 +36,6 @@ namespace NMafia {
 
         virtual ~TPlayerBase() = default;
 
-        virtual void WriteMsgById(const std::string& msg, Id id);
-        virtual void WriteMsgByRole(const std::string& msg, ERoles role);
-
         TSharedPtr<TMessagesQueue> GetChat() const {
             return PersonChatPtr;
         }
@@ -52,7 +49,8 @@ namespace NMafia {
         }
 
     protected:
-        virtual void ProcessSingleMessage(const TMessage& msg) override;
+        void WriteMsgById(const TJsonMap& msg, Id id);
+        void WriteMsgByRole(const TJsonMap& msg, ERoles role);
 
     protected:
         TSharedPtr<TMessagesQueue> PersonChatPtr;
