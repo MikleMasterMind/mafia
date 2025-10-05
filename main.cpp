@@ -5,6 +5,7 @@
 #include "game_classes/players/player_doctor.h"
 #include "game_classes/players/player_sheriff.h"
 #include "game_classes/players/player_maniac.h"
+#include "game_classes/players/player_mafia.h"
 
 
 using namespace NMafia;
@@ -15,35 +16,41 @@ int main() {
     };
     TLogger::multiLog(paths, "\n\n==========================\n");
     auto idToPlayer = TSharedPtr(new std::unordered_map<Id, TSharedPtr<TPlayerBase>>);
-    auto civilian = TSharedPtr<TPlayerBase>(new TPlayerCivilian(
+    std::vector<TSharedPtr<TPlayerBase>> players;
+    players.push_back(TSharedPtr<TPlayerBase>(new TPlayerCivilian(
         TSharedPtr(new TMessagesQueue()),
         idToPlayer,
         paths
-    ));
-    auto doctor = TSharedPtr<TPlayerBase>(new TPlayerDoctor(
+    )));
+    players.push_back(TSharedPtr<TPlayerBase>(new TPlayerDoctor(
         TSharedPtr(new TMessagesQueue()),
         idToPlayer,
         paths
-    ));
-    auto sheriff = TSharedPtr<TPlayerBase>(new TPlayerSheriff(
+    )));
+    players.push_back(TSharedPtr<TPlayerBase>(new TPlayerSheriff(
         TSharedPtr(new TMessagesQueue()),
         idToPlayer,
         paths
-    ));
-    auto maniac = TSharedPtr<TPlayerBase>(new TPlayerManiac(
+    )));
+    players.push_back(TSharedPtr<TPlayerBase>(new TPlayerManiac(
         TSharedPtr(new TMessagesQueue()),
         idToPlayer,
         paths
-    ));
+    )));
+    players.push_back(TSharedPtr<TPlayerBase>(new TPlayerMafia(
+        TSharedPtr(new TMessagesQueue()),
+        idToPlayer,
+        paths
+    )));
 
     std::vector<std::thread> gameTreads;
-    for (auto& player : {civilian, doctor, sheriff, maniac}) {
+    for (auto& player : players) {
         (*idToPlayer)[player->GetId()] = player;
         gameTreads.push_back(std::thread([&]() { player->StartProcessing(); }));
     }
 
     std::vector<std::future<void>> futures;
-    for (auto& player : {civilian, doctor, sheriff, maniac}) {
+    for (auto& player : players) {
         futures.push_back(std::async(std::launch::async, [&]() {
             player->DayAction().handle.resume();
         }));
@@ -55,7 +62,7 @@ int main() {
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    for (auto& player : {civilian, doctor, sheriff, maniac}) {
+    for (auto& player : players) {
         player->StopProcessing();
     }
     for (auto& thread : gameTreads) {
