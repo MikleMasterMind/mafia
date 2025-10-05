@@ -5,6 +5,7 @@
 
 namespace NMafia {
     class TPlayerDoctor : public TPlayerPlayable {
+    public:
         TPlayerDoctor(
             const std::set<ERoles>& roles,
             const TSharedPtr<TMessagesQueue>& queuePtr,

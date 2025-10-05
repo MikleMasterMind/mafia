@@ -24,9 +24,9 @@ namespace NMafia {
         );
     }
 
-    TSharedPtr<TPlayerBase> TPlayerPlayable::ChooseTargretToVoite() {
+    TSharedPtr<TPlayerPlayable> TPlayerPlayable::ChooseTargretToVoite() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPlayablePtr | std::views::keys, std::back_inserter(ids));
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {
@@ -38,8 +38,7 @@ namespace NMafia {
         std::vector<Id> suspiciousPlayers;
         std::ranges::copy(
             ids | std::views::filter([this, threshold](const Id& id) {
-                return (TrustTable[id] <= threshold)
-                    && (IdToPlayerPtr->at(id)->GetRoles().find(ERoles::Leader) == IdToPlayerPtr->at(id)->GetRoles().end());
+                return TrustTable[id] <= threshold;
             }),
             std::back_inserter(suspiciousPlayers)
         );
@@ -53,7 +52,7 @@ namespace NMafia {
             choosenId = suspiciousPlayers[std::uniform_int_distribution<>(0, suspiciousPlayers.size() - 1)(gen)];
         }
 
-        return IdToPlayerPtr->at(choosenId);
+        return IdToPlayerPlayablePtr->at(choosenId);
     }
 
     void TPlayerPlayable::ProcessSingleMessage(const TMessage &msg) {

@@ -16,6 +16,7 @@ add_executable(mafia
     game_classes/players/player_playable.cpp
     game_classes/players/player_civilian.cpp
     game_classes/players/player_doctor.cpp
+    game_classes/players/player_sheriff.cpp
 )
 
 add_custom_target(clean-build

@@ -60,7 +60,7 @@ namespace NMafia {
 
     protected:
         virtual void Voite();
-        TSharedPtr<TPlayerBase> ChooseTargretToVoite();
+        TSharedPtr<TPlayerPlayable> ChooseTargretToVoite();
 
         virtual void ProcessSingleMessage(const TMessage& msg) override;
 
