@@ -10,19 +10,25 @@ namespace NMafia {
     PlayerAction TPlayerManiac::NigthAction() {
         auto target = ChooseTargetToKill();
         TLogger::multiLog(LogPaths,
-            "Sheriff wants to kill " + target->GetId()
+            "Maniac wants to kill " + target->GetId()
         );
-        if (target->GetStatus() == EStatus::Alive) {
-            target->SetStatus(EStatus::Dead);
-        }
+        WriteMsgByRole(
+            {
+                {"message", "Maniac wants to kill"},
+                {"id", target->GetId()},
+            },
+            ERoles::Leader
+        );
         co_return;
     }
 
     TSharedPtr<TPlayerBase> TPlayerManiac::ChooseTargetToKill() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
-                return (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
-                    && (id != GetId());
+                return (id != GetId())
+                    && (!IsLeader(id))
+                    && (IsInGame(id))
+                    && (IsAlive(id));
             }),
             std::back_inserter(ids)
         );

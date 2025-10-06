@@ -6,6 +6,7 @@
 #include "game_classes/players/player_sheriff.h"
 #include "game_classes/players/player_maniac.h"
 #include "game_classes/players/player_mafia.h"
+#include "game_classes/players/player_leader.h"
 
 
 using namespace NMafia;
@@ -42,6 +43,14 @@ int main() {
         idToPlayer,
         paths
     )));
+    auto gameEnded = TSharedPtr<bool>(new bool(false));
+    auto leader = TSharedPtr<TPlayerBase>(new TPlayerLeader(
+        TSharedPtr(new TMessagesQueue()),
+        idToPlayer,
+        paths,
+        gameEnded
+    ));
+    players.push_back(leader);
 
     std::vector<std::thread> gameTreads;
     for (auto& player : players) {
@@ -49,18 +58,20 @@ int main() {
         gameTreads.push_back(std::thread([&]() { player->StartProcessing(); }));
     }
 
-    std::vector<std::future<void>> futures;
-    for (auto& player : players) {
-        futures.push_back(std::async(std::launch::async, [&]() {
-            player->DayAction().handle.resume();
-        }));
+    while (!*gameEnded) {
+        auto nigthFuture = std::async(std::launch::async, [&]() {
+            auto action = leader->NigthAction();
+            action.handle.resume();
+        });
+        nigthFuture.get();
+        auto dayFuture = std::async(std::launch::async, [&]() {
+            auto action = leader->DayAction();
+            action.handle.resume();
+        });
+        dayFuture.get();
     }
 
-    for (auto& future : futures) {
-        future.get();
-    }
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::cout << "End game\n";
 
     for (auto& player : players) {
         player->StopProcessing();

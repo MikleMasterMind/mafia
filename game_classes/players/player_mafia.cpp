@@ -39,9 +39,11 @@ namespace NMafia {
             ids | std::views::filter([this, threshold](const Id& id) {
                 auto roles = IdToPlayerPtr->at(id)->GetRoles();
                 return (TrustTable[id] <= threshold)
-                    && (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
-                    && (roles.find(ERoles::Mafia) == roles.end())
-                    && (id != GetId());
+                    && (roles.find(ERoles::Mafia) != roles.end())
+                    && (id != GetId())
+                    && (!IsLeader(id))
+                    && (IsInGame(id))
+                    && (IsAlive(id));
             }),
             std::back_inserter(billKill)
         );

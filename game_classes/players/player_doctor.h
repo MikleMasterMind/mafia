@@ -9,8 +9,7 @@ namespace NMafia {
         TPlayerDoctor(
             const TSharedPtr<TMessagesQueue>& queuePtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const std::vector<fs::path>& logPaths,
-            const std::set<ERoles>& /* roles */ = {}
+            const std::vector<fs::path>& logPaths
         )
         : TPlayerPlayable(
             queuePtr,

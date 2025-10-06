@@ -19,7 +19,6 @@ namespace NMafia {
             idToPlayerPtr,
             logPaths
         )
-        , Status(EStatus::Alive)
         {
             for (const auto& [id, player] : *IdToPlayerPtr) {
                 auto roles = player->GetRoles();
@@ -29,17 +28,9 @@ namespace NMafia {
             }
         }
 
-        ~TPlayerPlayable() = default;
+        virtual ~TPlayerPlayable() = default;
 
         virtual PlayerAction DayAction() override;
-
-        virtual EStatus GetStatus() const override {
-            return Status;
-        }
-
-        virtual void SetStatus(EStatus status) override {
-            Status = status;
-        }
 
     protected:
         virtual void Voite();
@@ -49,6 +40,5 @@ namespace NMafia {
 
     protected:
         std::unordered_map<Id, int> TrustTable;
-        EStatus Status;
     };
 }

@@ -32,6 +32,7 @@ namespace NMafia {
         Alive,
         Protected,
         Dead,
+        Excluded,
     };
 
     class TPlayerBase : public TMessageReader, public TMessageWriter {
@@ -60,6 +61,7 @@ namespace NMafia {
             , Roles(other.Roles)
             , IdToPlayerPtr(other.IdToPlayerPtr)
             , PersonId(other.PersonId)
+            , Status(EStatus::Alive)
         {
             TLogger::multiLog(LogPaths,
                 "Initialize player role: " + RolesToString(GetRoles()) + " Id: " + GetId()
@@ -97,9 +99,17 @@ namespace NMafia {
         virtual PlayerAction DayAction() = 0;
         virtual PlayerAction NigthAction() = 0;
 
-        virtual EStatus GetStatus() const = 0;
+        EStatus GetStatus() const {
+            return Status;
+        }
 
-        virtual void SetStatus(EStatus status) = 0;
+        void SetStatus(EStatus status) {
+            Status = status;
+        }
+
+        bool IsLeader(Id id);
+        bool IsInGame(Id id);
+        bool IsAlive(Id id);
 
     protected:
         void WriteMsgById(const TJsonMap& msg, Id id);
@@ -111,5 +121,6 @@ namespace NMafia {
         TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>> IdToPlayerPtr;
         Id PersonId;
         std::vector<fs::path> LogPaths;
+        EStatus Status;
     };
 }

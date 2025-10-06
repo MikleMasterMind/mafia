@@ -21,4 +21,18 @@ namespace NMafia {
             WriteMsgById(msg, player->GetId());
         }
     }
+
+    bool TPlayerBase::IsLeader(Id id) {
+        auto roles = IdToPlayerPtr->at(id)->GetRoles();
+        return roles.find(ERoles::Leader) != roles.end();
+    }
+
+    bool TPlayerBase::IsInGame(Id id) {
+        return IdToPlayerPtr->at(id)->GetStatus() != EStatus::Excluded;
+    }
+
+    bool TPlayerBase::IsAlive(Id id) {
+        auto status = IdToPlayerPtr->at(id)->GetStatus();
+        return  (status == EStatus::Alive) || (status == EStatus::Protected);
+    }
 }

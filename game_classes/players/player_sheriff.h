@@ -9,8 +9,7 @@ namespace NMafia {
         TPlayerSheriff(
             const TSharedPtr<TMessagesQueue>& queuePtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const std::vector<fs::path>& logPaths,
-            const std::set<ERoles>& /* roles */ = {}
+            const std::vector<fs::path>& logPaths
         )
         : TPlayerPlayable(
             queuePtr,
@@ -30,6 +29,8 @@ namespace NMafia {
         void Check();
         TSharedPtr<TPlayerBase> ChooseTargetToKill();
         TSharedPtr<TPlayerBase> ChooseTargetToCheck();
+
+    protected:
         std::set<Id> CheckedIds;
     };
 }

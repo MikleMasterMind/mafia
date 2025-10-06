@@ -63,5 +63,13 @@ namespace NMafia {
         size_t Size() const {
             return Data.size();
         }
+
+        std::string GetOrNull(const std::string& key) const {
+            if (Contains(key)) {
+                return Get(key);
+            } else {
+                return "";
+            }
+        }
     };
 }

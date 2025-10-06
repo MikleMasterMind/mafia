@@ -29,9 +29,13 @@ namespace NMafia {
         TLogger::multiLog(LogPaths,
             "Sheriff wants to kill " + target->GetId()
         );
-        if (target->GetStatus() == EStatus::Alive) {
-            target->SetStatus(EStatus::Dead);
-        }
+        WriteMsgByRole(
+            {
+                {"message", "Sheriff wants to kill"},
+                {"id", target->GetId()},
+            },
+            ERoles::Leader
+        );
     }
 
     void TPlayerSheriff::Check() {
@@ -51,7 +55,7 @@ namespace NMafia {
             TrustTable[target->GetId()] += 50;
         }
         TLogger::multiLog(LogPaths,
-            "Sheriff " + GetId() + "now trust to " + target->GetId() + " like " + std::to_string(TrustTable[target->GetId()])
+            "Sheriff " + GetId() + " now trust to " + target->GetId() + " like " + std::to_string(TrustTable[target->GetId()])
         );
     }
 
@@ -70,8 +74,10 @@ namespace NMafia {
         std::ranges::copy(
             ids | std::views::filter([this, minTrust](const Id& id) {
                 return (TrustTable[id] == minTrust)
-                    && (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
-                    && (id != GetId());
+                    && (id != GetId())
+                    && (!IsLeader(id))
+                    && (IsInGame(id))
+                    && (IsAlive(id));
             }),
             std::back_inserter(suspiciousPlayers)
         );
@@ -107,7 +113,9 @@ namespace NMafia {
                     && (TrustTable[id] >= downThreshold)
                     && (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
                     && (CheckedIds.find(id) == CheckedIds.end())
-                    && (id != GetId());
+                    && (id != GetId())
+                    && (!IsLeader(id))
+                    && (IsInGame(id));
             }),
             std::back_inserter(suspiciousPlayers)
         );

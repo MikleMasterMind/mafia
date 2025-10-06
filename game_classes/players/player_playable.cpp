@@ -41,8 +41,10 @@ namespace NMafia {
         std::ranges::copy(
             ids | std::views::filter([this, threshold](const Id& id) {
                 return (TrustTable[id] <= threshold)
-                    && (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead)
-                    && (id != GetId());
+                    && (id != GetId())
+                    && (!IsLeader(id))
+                    && (IsInGame(id))
+                    && (IsAlive(id));
             }),
             std::back_inserter(suspiciousPlayers)
         );
@@ -60,15 +62,15 @@ namespace NMafia {
     }
 
     void TPlayerPlayable::ProcessSingleMessage(const TMessage &msg) {
-        TLogger::multiLog(LogPaths,
-            "Player " + GetId() + " got message " + msg.Body.ToString() + " from " + msg.Src
-        );
-        if (msg.Body.Contains("message") && msg.Body.Get("message") == "Voite again") {
+        // TLogger::multiLog(LogPaths,
+        //     "Player " + GetId() + " got message " + msg.Body.ToString() + " from " + msg.Src
+        // );
+        if (msg.Body.GetOrNull("message") == "Voite again") {
             Id extractedId = msg.Body.Get("id");
             if (extractedId == GetId()) {
                 TrustTable[msg.Src] -= 5;
                 TLogger::multiLog(LogPaths,
-                    "Player now trust to " + msg.Src + " like " + std::to_string(TrustTable[msg.Src])
+                    "Player " + GetId() + " now trust to " + msg.Src + " like " + std::to_string(TrustTable[msg.Src])
                 );
             }
         }

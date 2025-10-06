@@ -22,7 +22,10 @@ namespace NMafia {
     TSharedPtr<TPlayerBase> TPlayerDoctor::ChooseTargetToHeal() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
-                return IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead;}),
+                return (!IsLeader(id))
+                    && (IsInGame(id))
+                    && (IsAlive(id));
+                }),
             std::back_inserter(ids)
         );
 
