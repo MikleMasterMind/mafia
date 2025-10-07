@@ -9,6 +9,7 @@
 #include "game_classes/players/player_maniac.h"
 #include "game_classes/players/player_mafia.h"
 #include "game_classes/players/player_leader.h"
+#include "game_classes/user/user_civilian.h"
 
 
 using namespace NMafia;
@@ -34,7 +35,17 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < args.PlayerCount / args.MafiaDivider; ++i) {
         INITIALIZE_PLAYER(TPlayerMafia, "logs/mafia.log");
     }
-    for (int i = 0; i < args.PlayerCount - (args.PlayerCount / args.MafiaDivider) - 3; ++i) {
+    int civilianCount = args.PlayerCount - (args.PlayerCount / args.MafiaDivider) - 3;
+    if (args.UserInGame) {
+        civilianCount--;
+        players.push_back(TSharedPtr<TPlayerBase>(new TUserCivilian(
+            idToPlayer,
+            {"logs/main.log", "logs/user_civilian.log"},
+            {ERoles::Default, ERoles::Peacefull, ERoles::Civilian},
+            "./user_chat.txt"
+        )));
+    }
+    for (int i = 0; i < civilianCount; ++i) {
         INITIALIZE_PLAYER(TPlayerCivilian, "logs/civilian.log");
     }
 

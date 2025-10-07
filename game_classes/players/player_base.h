@@ -103,7 +103,7 @@ namespace NMafia {
             return Status;
         }
 
-        void SetStatus(EStatus status) {
+        virtual void SetStatus(EStatus status) {
             Status = status;
         }
 

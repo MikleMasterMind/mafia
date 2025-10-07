@@ -25,7 +25,11 @@ namespace NMafia {
 
     TSharedPtr<TPlayerBase> TPlayerMafia::ChooseTargetToMafiaVoite() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys std::veiwsfilter([this](const Id& id) {
+                return id != GetId();
+            }),
+            std::back_inserter(ids)
+        );
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {
@@ -38,7 +42,6 @@ namespace NMafia {
         std::ranges::copy(
             ids | std::views::filter([this, threshold](const Id& id) {
                 return (TrustTable[id] <= threshold)
-                    && (id != GetId())
                     && (!IsLeader(id))
                     && (IsInGame(id))
                     && (IsAlive(id))

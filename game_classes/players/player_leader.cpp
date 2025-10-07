@@ -31,7 +31,7 @@
             std::string killerStr = killer; \
             WriteMsgByRole( \
                 { \
-                    {"message", killerStr + " killed " + target->GetId()}, \
+                    {"announc", killerStr + " killed " + target->GetId()}, \
                 }, \
                 ERoles::Default \
             ); \
@@ -96,7 +96,7 @@ namespace NMafia {
         );
         WriteMsgByRole(
             {
-                {"message", "Player " + choosenTarget + " choosen on day voiting"},
+                {"announc", "Player " + choosenTarget + " choosen on day voiting"},
             },
             ERoles::Default
         );
@@ -110,14 +110,14 @@ namespace NMafia {
         );
         WriteMsgByRole(
             {
-                {"message", "Player " + choosenTarget + " choosen on mafia voiting"},
+                {"announc", "Player " + choosenTarget + " choosen on mafia voiting"},
             },
             ERoles::Mafia
         );
         if (IdToPlayerPtr->at(choosenTarget)->GetStatus() != EStatus::Protected) {
             WriteMsgByRole(
                 {
-                    {"message", "Mafia killed " + choosenTarget},
+                    {"announc", "Mafia killed " + choosenTarget},
                 },
                 ERoles::Default
             );
@@ -175,15 +175,33 @@ namespace NMafia {
             TLogger::multiLog(LogPaths,
                 "Peacefull win!!!"
             );
+            WriteMsgByRole(
+                {
+                    {"announc", "Peacefull win!!!"},
+                },
+                ERoles::Default
+            );
         } else if (maniacCount == 1 && peacefullCount <= 1 && mafiaCount == 0) { // maniac win
             *GameEnded = true;
             TLogger::multiLog(LogPaths,
                 "Maniac win!!!"
             );
+            WriteMsgByRole(
+                {
+                    {"announc", "Maniac win!!!"},
+                },
+                ERoles::Default
+            );
         } else if ((mafiaCount > maniacCount + peacefullCount) || (mafiaCount >= peacefullCount && maniacCount == 0)) { // mafia win
             *GameEnded = true;
             TLogger::multiLog(LogPaths,
                 "Mafia win!!!"
+            );
+            WriteMsgByRole(
+                {
+                    {"announc", "Mafia win!!!"},
+                },
+                ERoles::Default
             );
         }
     }

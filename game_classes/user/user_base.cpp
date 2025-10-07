@@ -14,18 +14,16 @@ namespace NMafia {
         for (size_t i = 0; i < ids.size(); ++i) {
             const auto& id = ids[i];
             if (id != GetId() && IsAlive(id) && IsInGame(id)) {
-                std::cout << i + 1 << ". Player " << id
-                          << " (trust: " << TrustTable[id] << ")" << std::endl;
+                std::cout << "Player " << id << std::endl;
             }
         }
 
-        int choice;
+        Id choosenId;
         do {
             std::cout << "Choose id from list: ";
-            std::cin >> choice;
-        } while (choice < 1 || choice > static_cast<int>(ids.size()));
+            std::cin >> choosenId;
+        } while (std::count_if(ids.begin(), ids.end(), [&](const Id& id) { return id == choosenId; }) == 0);
 
-        Id choosenId = ids[choice - 1];
         auto target = IdToPlayerPtr->at(choosenId);
 
         WriteMsgByRole(
@@ -42,21 +40,20 @@ namespace NMafia {
     }
 
     void TUserBase::ProcessSingleMessage(const TMessage& msg) {
-        messagesQueue.push(msg);
-
-        auto now = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::seconds>(now - lastMessageCheck).count() >= 5) {
-            PrintAccumulatedMessages();
-            lastMessageCheck = now;
+        if (msg.Src == GetId()) {
+            return;
         }
-    }
-
-    void TUserBase::PrintAccumulatedMessages() {
-        while (!messagesQueue.empty()) {
-            const auto& msg = messagesQueue.front();
-            std::cout << "From player " << msg.Src << ": " << msg.Body.GetOrNull("message") << std::endl;
-            messagesQueue.pop();
+        std::string messageStr;
+        if (IsLeader(msg.Src)) {
+            messageStr = "=========\nFrom leader " + msg.Src + ": " + msg.Body.GetOrNull("announc") + "\n=========";
+        } else {
+            if (msg.Body.GetOrNull("message") == "Voite again") {
+                auto targetId = msg.Body.Get("id") == GetId() ? "you" : msg.Body.Get("id");
+                messageStr = "Player " + msg.Src + " voite again " + targetId;
+            } else {
+                messageStr = "From player " + msg.Src + ": " + msg.Body.ToString();
+            }
         }
-        std::cout << std::endl;
+        MessageFileStream << messageStr << std::endl;
     }
 }

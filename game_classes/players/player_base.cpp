@@ -12,13 +12,13 @@ namespace NMafia {
     }
 
     void TPlayerBase::WriteMsgByRole(const TJsonMap &msg, ERoles role) {
-        for (auto& [id, player]
-            : *IdToPlayerPtr
-            | std::views::filter([&role](auto p) {
-                return p.second->GetRoles().find(role) != p.second->GetRoles().end();
+        for (const auto& [id, player] : *IdToPlayerPtr | std::views::filter([&role](auto p) {
+                auto roles = p.second->GetRoles();
+                return (roles.find(role) != roles.end())
+                    && (id != GetId());
             })
         ) {
-            WriteMsgById(msg, player->GetId());
+            WriteMsgById(msg, id);
         }
     }
 

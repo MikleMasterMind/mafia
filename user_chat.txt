@@ -1,0 +1,46 @@
+<<<<< New Game >>>>>
+Your id in game: 431
+Your roles in game: Default, Peacefull, Civilian, Unknown
+Player 30 voite again 196
+Player 444 voite again 104
+Player 270 voite again 196
+Player 972 voite again 262
+Player 262 voite again you
+Player 143 voite again 196
+Player 196 voite again 30
+Player 987 voite again you
+Player 104 voite again 143
+=========
+From leader 729: Player 196 choosen on day voiting
+=========
+=========
+From leader 729: Mafia killed 262
+=========
+Player 30 voite again 262
+Player 444 voite again 104
+Player 270 voite again you
+Player 143 voite again 104
+Player 972 voite again 987
+Player 987 voite again 270
+Player 104 voite again 444
+=========
+From leader 729: Player 270 choosen on day voiting
+=========
+=========
+From leader 729: Mafia killed 987
+=========
+Player 444 voite again 104
+Player 30 voite again 729
+Player 972 voite again 30
+Player 143 voite again 104
+Player 104 voite again 444
+=========
+From leader 729: Player 104 choosen on day voiting
+=========
+=========
+From leader 729: Mafia killed 104
+=========
+Player 444 voite again 444
+Player 30 voite again 972
+Player 143 voite again 30
+Player 972 voite again 143

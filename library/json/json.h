@@ -47,7 +47,7 @@ namespace NMafia {
             Data.erase(key);
         }
 
-        std::string ToString() const {
+        std::string ToStringAsJson() const {
             std::string result = "{\n";
             for (const auto& pair : Data) {
                 result += "  \"" + pair.first + "\": \"" + pair.second + "\",\n";
@@ -57,6 +57,18 @@ namespace NMafia {
                 result.pop_back();
             }
             result += "\n}";
+            return result;
+        }
+
+        std::string ToString() const {
+            std::string result;
+            for (const auto& pair : Data) {
+                result += "\"" + pair.first + "\": \"" + pair.second + "\", ";
+            }
+            if (!Data.empty()) {
+                result.pop_back();
+                result.pop_back();
+            }
             return result;
         }
 

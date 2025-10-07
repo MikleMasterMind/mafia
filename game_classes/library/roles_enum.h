@@ -15,7 +15,8 @@ namespace NMafia {
         Civilian,
         Doctor,
         Sheriff,
-        Maniac
+        Maniac,
+        User
     };
 
     std::string RoleToString(ERoles role);

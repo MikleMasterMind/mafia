@@ -3,17 +3,58 @@
 #include "../players/player_playable.h"
 #include <queue>
 #include <chrono>
+#include <filesystem>
+#include <iostream>
+
 
 namespace NMafia {
+
+    namespace fs = std::filesystem;
+
     class TUserBase : public TPlayerPlayable {
     public:
         TUserBase(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
             const std::vector<fs::path>& logPaths,
-            const std::set<ERoles>& roles
+            const std::set<ERoles>& roles,
+            const fs::path& messageFilePath
         )
-            : TPlayerPlayable(idToPlayerPtr, logPaths, roles) {
-            lastMessageCheck = std::chrono::steady_clock::now();
+            : TPlayerPlayable(
+                idToPlayerPtr,
+                logPaths,
+                [&]() -> std::set<ERoles> {
+                    auto notConstRoles = roles;
+                    notConstRoles.insert(ERoles::User);
+                    return notConstRoles;
+                }()
+            )
+            , MessageFile(messageFilePath)
+        {
+            fs::create_directories(MessageFile.parent_path());
+            MessageFileStream.open(MessageFile, std::ios::app);
+            if (!MessageFileStream.is_open()) {
+                throw std::runtime_error("Cannot open message file: " + MessageFile.string());
+            }
+            WriteToView("<<<<< New Game >>>>>");
+            WriteToView("Your id in game: " + GetId());
+            WriteToView("Your roles in game: " + RolesToString(GetRoles()));
+        }
+
+        ~TUserBase() {
+            if (MessageFileStream.is_open()) {
+                MessageFileStream.close();
+            }
+        }
+
+        virtual void SetStatus(EStatus status) override {
+            TPlayerBase::SetStatus(status);
+            if (!IsInGame(GetId())) {
+                WriteToView("=========\nYou're not in game any more\n=========");
+            }
+        }
+
+        void WriteToView(const std::string& msg) {
+            MessageFileStream << msg << std::endl;
         }
 
     protected:
@@ -21,10 +62,8 @@ namespace NMafia {
 
         void ProcessSingleMessage(const TMessage& msg) override;
 
-    private:
-        void PrintAccumulatedMessages();
-
-        std::queue<TMessage> messagesQueue;
-        std::chrono::steady_clock::time_point lastMessageCheck;
+    protected:
+        fs::path MessageFile;
+        std::ofstream MessageFileStream;
     };
 }
