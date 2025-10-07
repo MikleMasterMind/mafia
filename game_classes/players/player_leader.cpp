@@ -28,15 +28,17 @@
     if (id != "") { \
         auto target = IdToPlayerPtr->at(id); \
         if (target->GetStatus() != EStatus::Protected) { \
-            std::string message = killer; \
-            message += " killed " + id; \
+            std::string killerStr = killer; \
             WriteMsgByRole( \
                 { \
-                    {"message", message}, \
+                    {"message", killerStr + " killed " + target->GetId()}, \
                 }, \
                 ERoles::Default \
             ); \
             target->SetStatus(EStatus::Excluded); \
+            TLogger::multiLog(LogPaths, \
+                killerStr + " killed " + id \
+            ); \
         } \
     } \
     id = "";
@@ -56,30 +58,19 @@ namespace NMafia {
     };
 
     PlayerAction TPlayerLeader::DayAction() {
-        std::cout << "begin day action\n";
         DO_ALL_PLAYERS_ACTIONS(DayAction);
-        std::cout << "players did their day actions\n";
         ProcessDayVoiting();
-        std::cout << "leader processed day voiting\n";
         CheckGameEnded();
-        std::cout << "end day action\n";
         co_return;
     }
 
     PlayerAction TPlayerLeader::NigthAction() {
-        std::cout << "begin nigth action\n";
         DO_ALL_PLAYERS_ACTIONS(NigthAction);
-        std::cout << "players did their nigth actions\n";
         ProcessMafiaVoiting();
-        std::cout << "leader processed mafia voiting\n";
         ProcessSheriffKill();
-        std::cout << "leader processed sheriff killing\n";
         ProcessManiacKill();
-        std::cout << "leader processed maniac killing\n";
         CleanDoctorHealing();
-        std::cout << "leader cleaned doctor healing\n";
         CheckGameEnded();
-        std::cout << "end nigth aciton\n";
         co_return;
     }
 
@@ -174,17 +165,22 @@ namespace NMafia {
                 && (roles.find(ERoles::Maniac) != roles.end());
         });
 
-        if (mafiaCount == 0 && maniacCount == 0) { // peacefull win
+        if (peacefullCount + mafiaCount + maniacCount == 0) {
+            *GameEnded = true;
+            TLogger::multiLog(LogPaths,
+                "All dead"
+            );
+        } else if (mafiaCount + maniacCount == 0) { // peacefull win
             *GameEnded = true;
             TLogger::multiLog(LogPaths,
                 "Peacefull win!!!"
             );
-        } else if (maniacCount == 1 && peacefullCount == 1 && mafiaCount == 0) { // maniac win
+        } else if (maniacCount == 1 && peacefullCount <= 1 && mafiaCount == 0) { // maniac win
             *GameEnded = true;
             TLogger::multiLog(LogPaths,
                 "Maniac win!!!"
             );
-        } else if ((mafiaCount > peacefullCount) || (mafiaCount >= peacefullCount && maniacCount == 0)) { // mafia win
+        } else if ((mafiaCount > maniacCount + peacefullCount) || (mafiaCount >= peacefullCount && maniacCount == 0)) { // mafia win
             *GameEnded = true;
             TLogger::multiLog(LogPaths,
                 "Mafia win!!!"

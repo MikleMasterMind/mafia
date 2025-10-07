@@ -12,6 +12,7 @@ add_executable(mafia
     library/unique_number_generator/unique_number_generator.cpp
     library/json/json.cpp
     library/logger/logger.cpp
+    library/args_parser/args_parser.cpp
     game_classes/library/messages_queue.cpp
     game_classes/library/roles_enum.cpp
     game_classes/players/player_base.cpp
@@ -32,7 +33,12 @@ add_custom_target(clean-build
     COMMENT "Очистка всех сгенерированных файлов"
 )
 
+add_custom_target(clean-logs
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/logs
+    COMMENT "Очистка всех логов"
+)
+
 add_custom_target(clean-all
-    DEPENDS clean clean-build
+    DEPENDS clean clean-build clean-logs
     COMMENT "Очистка всех сгенерированных и бинарных файлов"
 )

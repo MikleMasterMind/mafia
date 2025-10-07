@@ -110,6 +110,7 @@ namespace NMafia {
         bool IsLeader(Id id);
         bool IsInGame(Id id);
         bool IsAlive(Id id);
+        bool IsMafia(Id id);
 
     protected:
         void WriteMsgById(const TJsonMap& msg, Id id);

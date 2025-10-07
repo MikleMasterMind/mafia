@@ -4,6 +4,7 @@
 #include <ranges>
 #include <random>
 #include <algorithm>
+#include <iostream>
 
 
 namespace NMafia {
@@ -31,8 +32,8 @@ namespace NMafia {
 
         std::random_device rd;
         std::mt19937 gen(rd());
-        Id choosenId;
-        while (PrevPacientId.size() && PrevPacientId != choosenId) {
+        Id choosenId = ids[std::uniform_int_distribution<>(0, ids.size() - 1)(gen)];
+        while (PrevPacientId.size() != 0 && PrevPacientId != choosenId) {
             choosenId = ids[std::uniform_int_distribution<>(0, ids.size() - 1)(gen)];
         }
         PrevPacientId = choosenId;

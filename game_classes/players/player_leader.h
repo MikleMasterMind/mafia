@@ -7,7 +7,6 @@ namespace NMafia {
     class TPlayerLeader : public TPlayerBase {
     public:
         TPlayerLeader(
-            const TSharedPtr<TMessagesQueue>& queuePtr,
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
             const std::vector<fs::path>& logPaths,
             const TSharedPtr<bool> gameEnded
@@ -17,7 +16,7 @@ namespace NMafia {
                 ERoles::Default,
                 ERoles::Leader,
             },
-            queuePtr,
+            TSharedPtr(new TMessagesQueue()),
             idToPlayerPtr,
             logPaths
           )

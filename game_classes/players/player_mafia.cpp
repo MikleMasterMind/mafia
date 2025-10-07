@@ -37,13 +37,12 @@ namespace NMafia {
         std::vector<Id> billKill;
         std::ranges::copy(
             ids | std::views::filter([this, threshold](const Id& id) {
-                auto roles = IdToPlayerPtr->at(id)->GetRoles();
                 return (TrustTable[id] <= threshold)
-                    && (roles.find(ERoles::Mafia) != roles.end())
                     && (id != GetId())
                     && (!IsLeader(id))
                     && (IsInGame(id))
-                    && (IsAlive(id));
+                    && (IsAlive(id))
+                    && (IsMafia(id));
             }),
             std::back_inserter(billKill)
         );
