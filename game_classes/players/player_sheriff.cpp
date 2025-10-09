@@ -44,12 +44,11 @@ namespace NMafia {
             Kill();
             return;
         }
-        auto targetRoles = target->GetRoles();
         CheckedIds.insert(target->GetId());
         TLogger::multiLog(LogPaths,
             "Sheriff " + GetId() + " checks " + target->GetId()
         );
-        if (targetRoles.find(ERoles::Mafia) != targetRoles.end()) {
+        if (IsMafia(target->GetId())) {
             TrustTable[target->GetId()] -= 50;
         } else {
             TrustTable[target->GetId()] += 50;
@@ -62,7 +61,13 @@ namespace NMafia {
     TSharedPtr<TPlayerBase> TPlayerSheriff::ChooseTargetToKill()
     {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const auto& id) {
+                return ((id != GetId())
+                    && (!IsLeader(id))
+                    && (IsAlive(id)));
+            }),
+            std::back_inserter(ids)
+        );
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {
@@ -73,23 +78,20 @@ namespace NMafia {
         std::vector<Id> suspiciousPlayers;
         std::ranges::copy(
             ids | std::views::filter([this, minTrust](const Id& id) {
-                return (TrustTable[id] == minTrust)
-                    && (id != GetId())
-                    && (!IsLeader(id))
-                    && (IsInGame(id))
-                    && (IsAlive(id));
+                return TrustTable[id] == minTrust;
             }),
             std::back_inserter(suspiciousPlayers)
         );
 
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        Id choosenId;
         if (suspiciousPlayers.size() >= 1) {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            Id choosenId;
             choosenId = suspiciousPlayers[std::uniform_int_distribution<>(0, suspiciousPlayers.size() - 1)(gen)];
             return IdToPlayerPtr->at(choosenId);
         } else {
-            return IdToPlayerPtr->at(suspiciousPlayers[0]);
+            choosenId = ids[std::uniform_int_distribution<>(0, ids.size() - 1)(gen)];
+            return IdToPlayerPtr->at(choosenId);
         }
     }
 

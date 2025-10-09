@@ -4,7 +4,7 @@
 
 
 namespace NMafia {
-    class TPlayerCivilian : public TPlayerPlayable {
+    class TPlayerCivilian : public virtual TPlayerPlayable {
     public:
         TPlayerCivilian(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,

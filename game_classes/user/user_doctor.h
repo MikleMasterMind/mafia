@@ -1,13 +1,12 @@
 #pragma once
 
 #include "user_base.h"
-#include "../players/player_civilian.h"
-
+#include "../players/player_doctor.h"
 
 namespace NMafia {
-    class TUserCivilian : public virtual TUserBase, public virtual TPlayerCivilian {
+    class TUserDoctor : public TUserBase, public TPlayerDoctor {
     public:
-        TUserCivilian(
+        TUserDoctor(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
             const std::vector<fs::path>& logPaths,
             const fs::path& messageFilePath
@@ -18,12 +17,12 @@ namespace NMafia {
             {
                 ERoles::Default,
                 ERoles::Peacefull,
-                ERoles::Civilian,
+                ERoles::Doctor,
                 ERoles::User,
             },
             messageFilePath
         )
-        , TPlayerCivilian(
+        , TPlayerDoctor(
             idToPlayerPtr,
             logPaths
         )
@@ -39,8 +38,19 @@ namespace NMafia {
         )
         {}
 
-        virtual PlayerAction NigthAction() {
-            return TPlayerCivilian::NigthAction();
+    protected:
+        PlayerAction NigthAction() override {
+            return TPlayerDoctor::NigthAction();
         }
+
+        void ProcessSingleMessage(const TMessage& msg) override {
+            TUserBase::ProcessSingleMessage(msg);
+        }
+
+        void Voite() override {
+            TUserBase::Voite();
+        }
+
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToHeal() override;
     };
 }

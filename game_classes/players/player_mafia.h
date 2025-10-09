@@ -4,7 +4,7 @@
 
 
 namespace NMafia {
-    class TPlayerMafia : public TPlayerPlayable {
+    class TPlayerMafia : public virtual TPlayerPlayable {
     public:
         TPlayerMafia(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
@@ -24,5 +24,7 @@ namespace NMafia {
     protected:
         void MafiaVoite();
         TSharedPtr<TPlayerBase> ChooseTargetToMafiaVoite();
+
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToVoite() override;
     };
 }

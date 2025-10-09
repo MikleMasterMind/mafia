@@ -4,7 +4,7 @@
 
 
 namespace NMafia {
-    class TPlayerDoctor : public TPlayerPlayable {
+    class TPlayerDoctor : public virtual TPlayerPlayable {
     public:
         TPlayerDoctor(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
@@ -24,7 +24,7 @@ namespace NMafia {
         virtual PlayerAction NigthAction() override;
 
     protected:
-        TSharedPtr<TPlayerBase> ChooseTargetToHeal();
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToHeal();
 
     protected:
         Id PrevPacientId;

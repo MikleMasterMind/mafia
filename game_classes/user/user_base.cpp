@@ -8,14 +8,17 @@
 namespace NMafia {
     void TUserBase::Voite() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPtr | std::views::keys, std::back_inserter(ids));
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const auto& id) {
+                return ((id != GetId())
+                    && (IsAlive(id))
+                    && (!IsLeader(id)));
+                }),
+            std::back_inserter(ids)
+        );
 
         std::cout << "Choose player to voite again:" << std::endl;
         for (size_t i = 0; i < ids.size(); ++i) {
-            const auto& id = ids[i];
-            if (id != GetId() && IsAlive(id) && IsInGame(id)) {
-                std::cout << "Player " << id << std::endl;
-            }
+            std::cout << "Player " << ids[i] << std::endl;
         }
 
         Id choosenId;

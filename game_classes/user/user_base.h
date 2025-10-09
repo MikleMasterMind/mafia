@@ -11,7 +11,7 @@ namespace NMafia {
 
     namespace fs = std::filesystem;
 
-    class TUserBase : public TPlayerPlayable {
+    class TUserBase : public virtual TPlayerPlayable {
     public:
         TUserBase(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
@@ -22,11 +22,7 @@ namespace NMafia {
             : TPlayerPlayable(
                 idToPlayerPtr,
                 logPaths,
-                [&]() -> std::set<ERoles> {
-                    auto notConstRoles = roles;
-                    notConstRoles.insert(ERoles::User);
-                    return notConstRoles;
-                }()
+                roles
             )
             , MessageFile(messageFilePath)
         {

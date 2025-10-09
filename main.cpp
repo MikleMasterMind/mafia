@@ -10,6 +10,7 @@
 #include "game_classes/players/player_mafia.h"
 #include "game_classes/players/player_leader.h"
 #include "game_classes/user/user_civilian.h"
+#include "game_classes/user/user_doctor.h"
 
 
 using namespace NMafia;
@@ -38,10 +39,9 @@ int main(int argc, char* argv[]) {
     int civilianCount = args.PlayerCount - (args.PlayerCount / args.MafiaDivider) - 3;
     if (args.UserInGame) {
         civilianCount--;
-        players.push_back(TSharedPtr<TPlayerBase>(new TUserCivilian(
+        players.push_back(TSharedPtr<TPlayerBase>(new TUserDoctor(
             idToPlayer,
             {"logs/main.log", "logs/user_civilian.log"},
-            {ERoles::Default, ERoles::Peacefull, ERoles::Civilian},
             "./user_chat.txt"
         )));
     }

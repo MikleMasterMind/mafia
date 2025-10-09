@@ -1,46 +1,47 @@
 <<<<< New Game >>>>>
-Your id in game: 431
-Your roles in game: Default, Peacefull, Civilian, Unknown
-Player 30 voite again 196
-Player 444 voite again 104
-Player 270 voite again 196
-Player 972 voite again 262
-Player 262 voite again you
-Player 143 voite again 196
-Player 196 voite again 30
-Player 987 voite again you
-Player 104 voite again 143
+Your id in game: 448
+Your roles in game: Default, Peacefull, Doctor, Unknown
+Player 398 voite again you
+Player 84 voite again 72
+Player 72 voite again 84
+Player 238 voite again you
 =========
-From leader 729: Player 196 choosen on day voiting
+From leader 848: Player 448 choosen on day voiting
 =========
 =========
-From leader 729: Mafia killed 262
-=========
-Player 30 voite again 262
-Player 444 voite again 104
-Player 270 voite again you
-Player 143 voite again 104
-Player 972 voite again 987
-Player 987 voite again 270
-Player 104 voite again 444
-=========
-From leader 729: Player 270 choosen on day voiting
+You're not in game any more
 =========
 =========
-From leader 729: Mafia killed 987
+From leader 848: Sheriff killed 84
 =========
-Player 444 voite again 104
-Player 30 voite again 729
-Player 972 voite again 30
-Player 143 voite again 104
-Player 104 voite again 444
+Player 238 voite again 84
+Player 398 voite again 72
+Player 72 voite again 238
 =========
-From leader 729: Player 104 choosen on day voiting
+From leader 848: Player 238 choosen on day voiting
 =========
 =========
-From leader 729: Mafia killed 104
+From leader 848: Peacefull win!!!
 =========
-Player 444 voite again 444
-Player 30 voite again 972
-Player 143 voite again 30
-Player 972 voite again 143
+<<<<< New Game >>>>>
+Your id in game: 36
+Your roles in game: Default, Peacefull, Doctor, User
+Player 243 voite again 484
+Player 613 voite again 243
+Player 484 voite again 352
+Player 352 voite again 484
+=========
+From leader 336: Player 352 choosen on day voiting
+=========
+=========
+From leader 336: Mafia killed 352
+=========
+=========
+From leader 336: Sheriff killed 613
+=========
+=========
+From leader 336: Maniac killed 243
+=========
+=========
+From leader 336: Maniac win!!!
+=========

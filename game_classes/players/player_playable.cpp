@@ -26,10 +26,12 @@ namespace NMafia {
         );
     }
 
-    TSharedPtr<TPlayerBase> TPlayerPlayable::ChooseTargretToVoite() {
+    TSharedPtr<TPlayerBase> TPlayerMafia::ChooseTargretToVoite() {
         std::vector<Id> ids;
-        std::ranges::copy(*IdToPlayerPtr | std::views::keys std::veiwsfilter([this](const Id& id) {
-                return id != GetId();
+        std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
+                return (id != GetId()
+                    && (!IsLeader(id))
+                    && (IsAlive(id)));
             }),
             std::back_inserter(ids)
         );
@@ -44,10 +46,7 @@ namespace NMafia {
         std::vector<Id> suspiciousPlayers;
         std::ranges::copy(
             ids | std::views::filter([this, threshold](const Id& id) {
-                return (TrustTable[id] <= threshold)
-                    && (!IsLeader(id))
-                    && (IsInGame(id))
-                    && (IsAlive(id));
+                return TrustTable[id] <= threshold;
             }),
             std::back_inserter(suspiciousPlayers)
         );

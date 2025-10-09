@@ -12,10 +12,10 @@ namespace NMafia {
     }
 
     void TPlayerBase::WriteMsgByRole(const TJsonMap &msg, ERoles role) {
-        for (const auto& [id, player] : *IdToPlayerPtr | std::views::filter([&role](auto p) {
+        for (const auto& [id, player] : *IdToPlayerPtr | std::views::filter([&role, this](auto p) {
                 auto roles = p.second->GetRoles();
                 return (roles.find(role) != roles.end())
-                    && (id != GetId());
+                    && (p.first != GetId());
             })
         ) {
             WriteMsgById(msg, id);

@@ -12,6 +12,7 @@ namespace NMafia {
             case ERoles::Doctor:    return "Doctor";
             case ERoles::Sheriff:   return "Sheriff";
             case ERoles::Maniac:   return "Maniac";
+            case ERoles::User:   return "User";
             default:               return "Unknown";
         }
     }
