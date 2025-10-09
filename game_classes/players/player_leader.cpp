@@ -13,10 +13,8 @@
                 && (IsAlive(id)); \
     })) { \
         futures.push_back(std::async(std::launch::async, [&]() { \
-            if (IdToPlayerPtr->at(id)->GetStatus() != EStatus::Dead) { \
-                auto action = IdToPlayerPtr->at(id)->action(); \
-                action.handle.resume(); \
-            } \
+            auto action = IdToPlayerPtr->at(id)->action(); \
+            action.handle.resume(); \
         })); \
     } \
     \

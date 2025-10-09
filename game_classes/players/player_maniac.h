@@ -23,6 +23,6 @@ namespace NMafia {
         virtual PlayerAction NigthAction() override;
 
     protected:
-        TSharedPtr<TPlayerBase> ChooseTargetToKill();
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToKill();
     };
 }

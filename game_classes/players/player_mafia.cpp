@@ -81,8 +81,7 @@ namespace NMafia {
         int threshold = minTrust * 0.85;
 
         std::vector<Id> suspiciousPlayers;
-        std::ranges::copy(
-            ids | std::views::filter([this, threshold](const Id& id) {
+        std::ranges::copy(ids | std::views::filter([this, threshold](const Id& id) {
                 return TrustTable[id] <= threshold;
             }),
             std::back_inserter(suspiciousPlayers)

@@ -26,7 +26,7 @@ namespace NMafia {
         );
     }
 
-    TSharedPtr<TPlayerBase> TPlayerMafia::ChooseTargretToVoite() {
+    TSharedPtr<TPlayerBase> TPlayerPlayable::ChooseTargretToVoite() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
                 return (id != GetId()

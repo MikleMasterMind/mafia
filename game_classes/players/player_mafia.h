@@ -25,6 +25,6 @@ namespace NMafia {
         void MafiaVoite();
         TSharedPtr<TPlayerBase> ChooseTargetToMafiaVoite();
 
-        virtual TSharedPtr<TPlayerBase> ChooseTargetToVoite() override;
+        virtual TSharedPtr<TPlayerBase> ChooseTargretToVoite() override;
     };
 }

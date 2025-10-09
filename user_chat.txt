@@ -1,47 +1,27 @@
 <<<<< New Game >>>>>
-Your id in game: 448
-Your roles in game: Default, Peacefull, Doctor, Unknown
-Player 398 voite again you
-Player 84 voite again 72
-Player 72 voite again 84
-Player 238 voite again you
+Your id in game: 213
+Your roles in game: Default, Peacefull, Maniac, User
+Player 925 voite again 483
+Player 17 voite again 483
+Player 575 voite again 17
+Player 676 voite again 887
+Player 483 voite again 925
+Player 887 voite again 925
+Player 193 voite again 925
+Player 233 voite again 676
+Player 125 voite again you
 =========
-From leader 848: Player 448 choosen on day voiting
-=========
-=========
-You're not in game any more
-=========
-=========
-From leader 848: Sheriff killed 84
-=========
-Player 238 voite again 84
-Player 398 voite again 72
-Player 72 voite again 238
-=========
-From leader 848: Player 238 choosen on day voiting
+From leader 508: Player 925 choosen on day voiting
 =========
 =========
-From leader 848: Peacefull win!!!
-=========
-<<<<< New Game >>>>>
-Your id in game: 36
-Your roles in game: Default, Peacefull, Doctor, User
-Player 243 voite again 484
-Player 613 voite again 243
-Player 484 voite again 352
-Player 352 voite again 484
-=========
-From leader 336: Player 352 choosen on day voiting
+From leader 508: Mafia killed 887
 =========
 =========
-From leader 336: Mafia killed 352
+From leader 508: Maniac killed 125
 =========
-=========
-From leader 336: Sheriff killed 613
-=========
-=========
-From leader 336: Maniac killed 243
-=========
-=========
-From leader 336: Maniac win!!!
-=========
+Player 676 voite again 233
+Player 17 voite again 575
+Player 483 voite again 17
+Player 575 voite again 483
+Player 233 voite again 575
+Player 193 voite again 17

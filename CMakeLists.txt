@@ -26,6 +26,7 @@ add_executable(mafia
     game_classes/user/user_base.cpp
     game_classes/user/user_civilian.cpp
     game_classes/user/user_doctor.cpp
+    game_classes/user/user_maniac.cpp
 )
 
 add_custom_target(clean-build
