@@ -64,10 +64,15 @@ namespace NMafia {
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const auto& id) {
                 return ((id != GetId())
                     && (!IsLeader(id))
-                    && (IsAlive(id)));
+                    && (IsAlive(id))
+                    && (CheckedIds.find(id) == CheckedIds.end()));
             }),
             std::back_inserter(ids)
         );
+
+        if (ids.size() == 0) {
+            return TSharedPtr<TPlayerBase>();
+        }
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {

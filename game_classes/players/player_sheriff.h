@@ -23,10 +23,10 @@ namespace NMafia {
         virtual PlayerAction NigthAction() override;
 
     protected:
-        void Kill();
-        void Check();
-        TSharedPtr<TPlayerBase> ChooseTargetToKill();
-        TSharedPtr<TPlayerBase> ChooseTargetToCheck();
+        virtual void Kill();
+        virtual void Check();
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToKill();
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToCheck();
 
     protected:
         std::set<Id> CheckedIds;

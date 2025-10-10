@@ -12,6 +12,7 @@
 #include "game_classes/user/user_civilian.h"
 #include "game_classes/user/user_doctor.h"
 #include "game_classes/user/user_maniac.h"
+#include "game_classes/user/user_sheriff.h"
 
 
 using namespace NMafia;
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
         )));
 
     INITIALIZE_PLAYER(TPlayerDoctor, "logs/doctor.log");
-    INITIALIZE_PLAYER(TPlayerSheriff, "logs/sheriff.log");
+    // INITIALIZE_PLAYER(TPlayerSheriff, "logs/sheriff.log");
     INITIALIZE_PLAYER(TPlayerManiac, "logs/maniac.log");
     for (int i = 0; i < args.PlayerCount / args.MafiaDivider; ++i) {
         INITIALIZE_PLAYER(TPlayerMafia, "logs/mafia.log");
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
     int civilianCount = args.PlayerCount - (args.PlayerCount / args.MafiaDivider) - 3;
     if (args.UserInGame) {
         civilianCount--;
-        players.push_back(TSharedPtr<TPlayerBase>(new TUserManiac(
+        players.push_back(TSharedPtr<TPlayerBase>(new TUserSheriff(
             idToPlayer,
             {"logs/main.log", "logs/user.log"},
             "./user_chat.txt"
