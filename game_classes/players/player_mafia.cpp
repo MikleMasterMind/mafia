@@ -11,13 +11,15 @@ namespace NMafia {
 
     void TPlayerMafia::MafiaVoite() {
         auto target = ChooseTargetToMafiaVoite();
-        WriteMsgByRole(
-            {
-                {"message", "Mafia voite again"},
-                {"id", target->GetId()},
-            },
-            ERoles::Leader
-        );
+        for (const auto& role : {ERoles::Leader, ERoles::Mafia}) {
+            WriteMsgByRole(
+                {
+                    {"message", "Mafia voite again"},
+                    {"id", target->GetId()},
+                },
+                role
+            );
+        }
         TLogger::multiLog(LogPaths,
             "Player " + GetId() + " voite as mafia again " + target->GetId()
         );
@@ -45,7 +47,7 @@ namespace NMafia {
                     && (!IsLeader(id))
                     && (IsInGame(id))
                     && (IsAlive(id))
-                    && (IsMafia(id));
+                    && (!IsMafia(id));
             }),
             std::back_inserter(billKill)
         );

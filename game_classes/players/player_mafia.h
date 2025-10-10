@@ -23,7 +23,7 @@ namespace NMafia {
 
     protected:
         void MafiaVoite();
-        TSharedPtr<TPlayerBase> ChooseTargetToMafiaVoite();
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToMafiaVoite();
 
         virtual TSharedPtr<TPlayerBase> ChooseTargretToVoite() override;
     };

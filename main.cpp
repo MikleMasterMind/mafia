@@ -13,6 +13,7 @@
 #include "game_classes/user/user_doctor.h"
 #include "game_classes/user/user_maniac.h"
 #include "game_classes/user/user_sheriff.h"
+#include "game_classes/user/user_mafia.h"
 
 
 using namespace NMafia;
@@ -33,7 +34,7 @@ int main(int argc, char* argv[]) {
         )));
 
     INITIALIZE_PLAYER(TPlayerDoctor, "logs/doctor.log");
-    // INITIALIZE_PLAYER(TPlayerSheriff, "logs/sheriff.log");
+    INITIALIZE_PLAYER(TPlayerSheriff, "logs/sheriff.log");
     INITIALIZE_PLAYER(TPlayerManiac, "logs/maniac.log");
     for (int i = 0; i < args.PlayerCount / args.MafiaDivider; ++i) {
         INITIALIZE_PLAYER(TPlayerMafia, "logs/mafia.log");
@@ -41,7 +42,7 @@ int main(int argc, char* argv[]) {
     int civilianCount = args.PlayerCount - (args.PlayerCount / args.MafiaDivider) - 3;
     if (args.UserInGame) {
         civilianCount--;
-        players.push_back(TSharedPtr<TPlayerBase>(new TUserSheriff(
+        players.push_back(TSharedPtr<TPlayerBase>(new TUserMafia(
             idToPlayer,
             {"logs/main.log", "logs/user.log"},
             "./user_chat.txt"
@@ -69,21 +70,21 @@ int main(int argc, char* argv[]) {
 
     // main loop
     while (!*gameEnded) {
-        auto dayFuture = std::async(std::launch::async, [&]() {
-            auto action = leader->DayAction();
-            action.handle.resume();
-        });
-        dayFuture.get();
-
-        if (*gameEnded) {
-            break;
-        }
-
         auto nigthFuture = std::async(std::launch::async, [&]() {
             auto action = leader->NigthAction();
             action.handle.resume();
         });
         nigthFuture.get();
+
+        if (*gameEnded) {
+            break;
+        }
+
+        auto dayFuture = std::async(std::launch::async, [&]() {
+            auto action = leader->DayAction();
+            action.handle.resume();
+        });
+        dayFuture.get();
     }
 
 
