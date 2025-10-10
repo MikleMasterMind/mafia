@@ -15,7 +15,6 @@
 #include "game_classes/user/user_sheriff.h"
 #include "game_classes/user/user_mafia.h"
 
-
 using namespace NMafia;
 
 int main(int argc, char* argv[]) {
@@ -27,29 +26,92 @@ int main(int argc, char* argv[]) {
     // Prepare game
     auto idToPlayer = TSharedPtr(new std::unordered_map<Id, TSharedPtr<TPlayerBase>>);
     std::vector<TSharedPtr<TPlayerBase>> players;
-    #define INITIALIZE_PLAYER(class, logfile) \
+
+    TSharedPtr<TPlayerBase> userPlayer;
+    bool isUserCivilian = false;
+    bool isUserDoctor = false;
+    bool isUserSheriff = false;
+    bool isUserManiac = false;
+    bool isUserMafia = false;
+
+    int mafiaCount = args.PlayerCount / args.MafiaDivider;
+    int civilianCount = args.PlayerCount - mafiaCount - 3;
+
+    if (args.UserInGame) {
+        ERoles userRole = GetRandomRole();
+        switch (userRole) {
+            case ERoles::Civilian:
+                userPlayer = TSharedPtr<TPlayerBase>(new TUserCivilian(
+                    idToPlayer,
+                    {"logs/main.log", "logs/user.log"},
+                    "./user_chat.txt"
+                ));
+                isUserCivilian = true;
+                break;
+            case ERoles::Doctor:
+                userPlayer = TSharedPtr<TPlayerBase>(new TUserDoctor(
+                    idToPlayer,
+                    {"logs/main.log", "logs/user.log"},
+                    "./user_chat.txt"
+                ));
+                isUserDoctor = true;
+                break;
+            case ERoles::Sheriff:
+                userPlayer = TSharedPtr<TPlayerBase>(new TUserSheriff(
+                    idToPlayer,
+                    {"logs/main.log", "logs/user.log"},
+                    "./user_chat.txt"
+                ));
+                isUserSheriff = true;
+                break;
+            case ERoles::Maniac:
+                userPlayer = TSharedPtr<TPlayerBase>(new TUserManiac(
+                    idToPlayer,
+                    {"logs/main.log", "logs/user.log"},
+                    "./user_chat.txt"
+                ));
+                isUserManiac = true;
+                break;
+            case ERoles::Mafia:
+                userPlayer = TSharedPtr<TPlayerBase>(new TUserMafia(
+                    idToPlayer,
+                    {"logs/main.log", "logs/user.log"},
+                    "./user_chat.txt"
+                ));
+                isUserMafia = true;
+                break;
+            default:
+                return 1;
+        }
+        players.push_back(userPlayer);
+    }
+
+    #define INITIALIZE_PLAYER(class) \
         players.push_back(TSharedPtr<TPlayerBase>(new class( \
             idToPlayer, \
-            {"logs/main.log", logfile} \
+            {"logs/main.log"} \
         )));
 
-    INITIALIZE_PLAYER(TPlayerDoctor, "logs/doctor.log");
-    INITIALIZE_PLAYER(TPlayerSheriff, "logs/sheriff.log");
-    INITIALIZE_PLAYER(TPlayerManiac, "logs/maniac.log");
-    for (int i = 0; i < args.PlayerCount / args.MafiaDivider; ++i) {
-        INITIALIZE_PLAYER(TPlayerMafia, "logs/mafia.log");
+    if (!isUserDoctor) {
+        INITIALIZE_PLAYER(TPlayerDoctor);
     }
-    int civilianCount = args.PlayerCount - (args.PlayerCount / args.MafiaDivider) - 3;
-    if (args.UserInGame) {
-        civilianCount--;
-        players.push_back(TSharedPtr<TPlayerBase>(new TUserMafia(
-            idToPlayer,
-            {"logs/main.log", "logs/user.log"},
-            "./user_chat.txt"
-        )));
+    if (!isUserSheriff) {
+        INITIALIZE_PLAYER(TPlayerSheriff);
+    }
+    if (!isUserManiac) {
+        INITIALIZE_PLAYER(TPlayerManiac);
+    }
+    if (isUserCivilian) {
+        --civilianCount;
     }
     for (int i = 0; i < civilianCount; ++i) {
-        INITIALIZE_PLAYER(TPlayerCivilian, "logs/civilian.log");
+        INITIALIZE_PLAYER(TPlayerCivilian);
+    }
+    if (isUserMafia) {
+        --mafiaCount;
+    }
+    for (int i = 0; i < mafiaCount; ++i) {
+        INITIALIZE_PLAYER(TPlayerMafia);
     }
 
     #undef INITIALIZE_PLAYER
@@ -57,7 +119,7 @@ int main(int argc, char* argv[]) {
     auto gameEnded = TSharedPtr<bool>(new bool(false));
     auto leader = TSharedPtr<TPlayerBase>(new TPlayerLeader(
         idToPlayer,
-        {"logs/main.log", "logs/leader.log"},
+        {"logs/main.log"},
         gameEnded
     ));
     players.push_back(leader);

@@ -1,5 +1,8 @@
 #include "roles_enum.h"
 
+#include <vector>
+#include <random>
+
 
 namespace NMafia {
     std::string RoleToString(ERoles role) {
@@ -35,5 +38,22 @@ namespace NMafia {
         }
 
         return stream.str();
+    }
+
+    ERoles GetRandomRole() {
+        std::vector<ERoles> allRoles = {
+            ERoles::Mafia,
+            ERoles::Peacefull,
+            ERoles::Civilian,
+            ERoles::Doctor,
+            ERoles::Sheriff,
+            ERoles::Maniac
+        };
+
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distrib(0, allRoles.size() - 1);
+
+        return allRoles[distrib(gen)];
     }
 }

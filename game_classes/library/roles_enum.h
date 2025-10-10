@@ -22,4 +22,6 @@ namespace NMafia {
     std::string RoleToString(ERoles role);
 
     std::string RolesToString(const std::set<ERoles>& roles);
+
+    ERoles GetRandomRole();
 }

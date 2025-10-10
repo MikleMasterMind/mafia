@@ -21,7 +21,7 @@ namespace NMafia {
 
         Id choosenId;
         do {
-            std::cout << "Choose id from list: " << std::endl;
+            std::cout << "Choose id from list: ";
             std::cin >> choosenId;
         } while (std::count_if(ids.begin(), ids.end(), [&](const Id& id) { return id == choosenId; }) == 0);
 

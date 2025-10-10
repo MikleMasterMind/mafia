@@ -21,18 +21,10 @@ namespace NMafia {
         fs::path FilePath;
 
         TLogger(const fs::path& path) : FilePath(path) {
-            try {
-                if (!fs::exists(FilePath.parent_path())) {
-                    fs::create_directories(FilePath.parent_path());
-                }
-
-                FileStream.open(FilePath, std::ios::app);
-                if (!FileStream.is_open()) {
-                    std::cerr << "Ошибка открытия файла " << FilePath << std::endl;
-                }
-            } catch (const fs::filesystem_error& ex) {
-                std::cerr << "Ошибка работы с файловой системой: " << ex.what() << std::endl;
+            if (!fs::exists(FilePath.parent_path())) {
+                fs::create_directories(FilePath.parent_path());
             }
+            FileStream.open(FilePath, std::ios::app);
         }
 
         TLogger(const TLogger&) = delete;
