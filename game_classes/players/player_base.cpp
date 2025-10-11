@@ -40,4 +40,15 @@ namespace NMafia {
         auto roles = IdToPlayerPtr->at(id)->GetRoles();
         return roles.find(ERoles::Mafia) != roles.end();
     }
+
+    std::string TPlayerBase::GetStatistic() const {
+        std::stringstream stats;
+        stats << "------------------------------------------------\n";
+        stats << "ID: " << GetId() << "\n";
+        stats << "Status: " <<
+            (Status == EStatus::Alive ? "Alive" :
+              (Status == EStatus::Dead ? "Dead" : "Excluded")) << "\n";
+        stats << "Roles: " << RolesToString(GetRoles()) << "\n";
+        return stats.str();
+    }
 }

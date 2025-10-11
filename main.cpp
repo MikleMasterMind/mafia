@@ -150,6 +150,9 @@ int main(int argc, char* argv[]) {
 
     TLogger::SetLogFilePath("end");
     leader->SayResult();
+    for (const auto& player : players) {
+        TLogger::Log(player->GetStatistic());
+    }
 
 
     // finish

@@ -133,6 +133,8 @@ namespace NMafia {
         bool IsAlive(Id id);
         bool IsMafia(Id id);
 
+        virtual std::string GetStatistic() const;
+
     protected:
         void WriteMsgById(const TJsonMap& msg, Id id);
         void WriteMsgByRole(const TJsonMap& msg, ERoles role);

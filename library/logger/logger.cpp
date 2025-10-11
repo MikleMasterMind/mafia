@@ -6,9 +6,13 @@ namespace NMafia {
     fs::path TLogger::FilePath;
     std::mutex TLogger::WriteMutex;
     std::string TLogger::timestamp;
-    bool TLogger::Enable = true;
+    bool TLogger::Enable = false;
 
     void TLogger::SetLogFilePath(const std::string& filename) {
+        if (!Enable) {
+            return;
+        }
+
         std::unique_lock<std::mutex> lock(WriteMutex);
         if (FileStream.is_open()) {
             FileStream.close();
