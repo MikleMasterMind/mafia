@@ -8,12 +8,10 @@ namespace NMafia {
     public:
         TUserMafia(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const std::vector<fs::path>& logPaths,
             const fs::path& messageFilePath
         )
         : TUserBase(
             idToPlayerPtr,
-            logPaths,
             {
                 ERoles::Default,
                 ERoles::Peacefull,
@@ -23,12 +21,10 @@ namespace NMafia {
             messageFilePath
         )
         , TPlayerMafia(
-            idToPlayerPtr,
-            logPaths
+            idToPlayerPtr
         )
         , TPlayerPlayable(
             idToPlayerPtr,
-            logPaths,
             {
                 ERoles::Default,
                 ERoles::Peacefull,

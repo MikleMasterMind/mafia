@@ -20,7 +20,7 @@ namespace NMafia {
                 role
             );
         }
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Player " + GetId() + " voite as mafia again " + target->GetId()
         );
     }

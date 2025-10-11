@@ -1,12 +1,12 @@
 #pragma once
 
+#include <string>
+#include <mutex>
 #include <filesystem>
 #include <fstream>
-#include <string>
-#include <map>
-#include <mutex>
-#include <iostream>
-#include <vector>
+#include <chrono>
+#include <iomanip>
+
 
 namespace NMafia {
 
@@ -14,61 +14,19 @@ namespace NMafia {
 
     class TLogger {
     private:
-        static std::map<fs::path, TLogger*> Instance;
-        static std::mutex InstanceMutex;
+        static std::ofstream FileStream;
+        static fs::path FilePath;
         static std::mutex WriteMutex;
-        std::ofstream FileStream;
-        fs::path FilePath;
-
-        TLogger(const fs::path& path) : FilePath(path) {
-            if (!fs::exists(FilePath.parent_path())) {
-                fs::create_directories(FilePath.parent_path());
-            }
-            FileStream.open(FilePath, std::ios::app);
-        }
-
-        TLogger(const TLogger&) = delete;
-        TLogger& operator=(const TLogger&) = delete;
+        static std::string timestamp;
+        static bool Enable;
 
     public:
-        static TLogger* getInstance(const fs::path& path) {
-            std::unique_lock<std::mutex> lock(InstanceMutex);
+        static void SetLogFilePath(const std::string& filename);
 
-            if (Instance.find(path) == Instance.end()) {
-                Instance[path] = new TLogger(path);
-            }
-            return Instance[path];
-        }
+        static void Log(const std::string& message);
 
-        void log(const std::string& message) {
-            std::unique_lock lock(WriteMutex);
-            if (FileStream.is_open()) {
-                FileStream << message << std::endl;
-            }
-        }
+        static void SetEnable();
 
-        static void multiLog(const std::vector<fs::path>& paths, const std::string& message) {
-            for (const auto& path : paths) {
-                TLogger* logger = getInstance(path);
-                if (logger) {
-                    logger->log(message);
-                }
-            }
-        }
-
-        static void destroyAll() {
-            std::unique_lock<std::mutex> lock(InstanceMutex);
-
-            for (auto& pair : Instance) {
-                delete pair.second;
-            }
-            Instance.clear();
-        }
-
-        ~TLogger() {
-            if (FileStream.is_open()) {
-                FileStream.close();
-            }
-        }
+        static void Destroy();
     };
 }

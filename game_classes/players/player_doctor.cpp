@@ -11,7 +11,7 @@ namespace NMafia {
     PlayerAction TPlayerDoctor::NigthAction() {
         auto target = ChooseTargetToHeal();
         auto targetStatus = target->GetStatus();
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Doctor wants to heal " + target->GetId()
         );
         if (targetStatus == EStatus::Alive || targetStatus == EStatus::Dead) {

@@ -40,17 +40,15 @@ namespace NMafia {
         TPlayerBase(
             const std::set<ERoles>& roles,
             const TSharedPtr<TMessagesQueue>& queuePtr,
-            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const std::vector<fs::path>& logPaths
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr
         )
             : TMessageReader(queuePtr)
             , PersonChatPtr(queuePtr)
             , Roles(roles)
             , IdToPlayerPtr(idToPlayerPtr)
             , PersonId(std::to_string(UniqueNumberGenerator::getInstance().getUniqueNumber()))
-            , LogPaths(logPaths)
         {
-            TLogger::multiLog(logPaths,
+            TLogger::Log(
                 "Initialize player role: " + RolesToString(GetRoles()) + " Id: " + GetId()
             );
         };
@@ -63,7 +61,7 @@ namespace NMafia {
             , PersonId(other.PersonId)
             , Status(EStatus::Alive)
         {
-            TLogger::multiLog(LogPaths,
+            TLogger::Log(
                 "Initialize player role: " + RolesToString(GetRoles()) + " Id: " + GetId()
             );
         };
@@ -83,16 +81,10 @@ namespace NMafia {
         }
 
         void StartProcessing() {
-            TLogger::multiLog(LogPaths,
-                "Player " + GetId() + " starting processing input messages"
-            );
             TMessageReader::StartProcessing();
         }
 
         void StopProcessing() {
-            TLogger::multiLog(LogPaths,
-                "Player " + GetId() + " stopping processing input messages"
-            );
             TMessageReader::StopProcessing();
         }
 
@@ -121,7 +113,6 @@ namespace NMafia {
         std::set<ERoles> Roles;
         TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>> IdToPlayerPtr;
         Id PersonId;
-        std::vector<fs::path> LogPaths;
         EStatus Status;
     };
 }

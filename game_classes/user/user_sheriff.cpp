@@ -30,7 +30,7 @@ namespace NMafia {
             return;
         }
         CheckedIds.insert(target->GetId());
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Sheriff " + GetId() + " checks " + target->GetId()
         );
         if (IsMafia(target->GetId())) {

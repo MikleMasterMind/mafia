@@ -9,7 +9,7 @@
 namespace NMafia {
     PlayerAction TPlayerManiac::NigthAction() {
         auto target = ChooseTargetToKill();
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Maniac wants to kill " + target->GetId()
         );
         WriteMsgByRole(

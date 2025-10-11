@@ -21,7 +21,7 @@ namespace NMafia {
             },
             ERoles::Default
         );
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Player " + GetId() + " voite again " + target->GetId()
         );
     }
@@ -64,14 +64,14 @@ namespace NMafia {
     }
 
     void TPlayerPlayable::ProcessSingleMessage(const TMessage &msg) {
-        // TLogger::multiLog(LogPaths,
+        // TLogger::Log(
         //     "Player " + GetId() + " got message " + msg.Body.ToString() + " from " + msg.Src
         // );
         if (msg.Body.GetOrNull("message") == "Voite again") {
             Id extractedId = msg.Body.Get("id");
             if (extractedId == GetId()) {
                 TrustTable[msg.Src] -= 5;
-                TLogger::multiLog(LogPaths,
+                TLogger::Log(
                     "Player " + GetId() + " now trust to " + msg.Src + " like " + std::to_string(TrustTable[msg.Src])
                 );
             }

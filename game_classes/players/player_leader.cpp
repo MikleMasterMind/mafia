@@ -34,7 +34,7 @@
                 ERoles::Default \
             ); \
             target->SetStatus(EStatus::Excluded); \
-            TLogger::multiLog(LogPaths, \
+            TLogger::Log( \
                 killerStr + " killed " + id \
             ); \
         } \
@@ -58,7 +58,6 @@ namespace NMafia {
     PlayerAction TPlayerLeader::DayAction() {
         DO_ALL_PLAYERS_ACTIONS(DayAction);
         ProcessDayVoiting();
-        CheckGameEnded();
         co_return;
     }
 
@@ -68,12 +67,11 @@ namespace NMafia {
         ProcessSheriffKill();
         ProcessManiacKill();
         CleanDoctorHealing();
-        CheckGameEnded();
         co_return;
     }
 
     void TPlayerLeader::ProcessSingleMessage(const TMessage &msg) {
-        // TLogger::multiLog(LogPaths,
+        // TLogger::Log(
         //     "Player " + GetId() + " got message " + msg.Body.ToString() + " from " + msg.Src
         // );
         if (msg.Body.GetOrNull("message") == "Voite again") {
@@ -89,7 +87,7 @@ namespace NMafia {
 
     void TPlayerLeader::ProcessDayVoiting() {
         auto choosenTarget = GetChoosenTarget(DayVoiteTable);
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Player " + choosenTarget + " choosen on day voiting"
         );
         WriteMsgByRole(
@@ -103,7 +101,7 @@ namespace NMafia {
 
     void TPlayerLeader::ProcessMafiaVoiting()  {
         auto choosenTarget = GetChoosenTarget(MafiaVoiteTable);
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Player " + choosenTarget + " choosen on mafia voiting"
         );
         WriteMsgByRole(
@@ -139,7 +137,7 @@ namespace NMafia {
         }
     }
 
-    void TPlayerLeader::CheckGameEnded() {
+    bool TPlayerLeader::GameEnded() {
         std::vector<TSharedPtr<TPlayerBase>> players;
         std::ranges::copy(*IdToPlayerPtr | std::views::values, std::back_inserter(players));
 
@@ -164,44 +162,30 @@ namespace NMafia {
         });
 
         if (peacefullCount + mafiaCount + maniacCount == 0) {
-            *GameEnded = true;
-            TLogger::multiLog(LogPaths,
-                "All dead"
-            );
-        } else if (mafiaCount + maniacCount == 0) { // peacefull win
-            *GameEnded = true;
-            TLogger::multiLog(LogPaths,
-                "Peacefull win!!!"
-            );
-            WriteMsgByRole(
-                {
-                    {"announc", "Peacefull win!!!"},
-                },
-                ERoles::Default
-            );
-        } else if (maniacCount == 1 && peacefullCount <= 1 && mafiaCount == 0) { // maniac win
-            *GameEnded = true;
-            TLogger::multiLog(LogPaths,
-                "Maniac win!!!"
-            );
-            WriteMsgByRole(
-                {
-                    {"announc", "Maniac win!!!"},
-                },
-                ERoles::Default
-            );
-        } else if ((mafiaCount > maniacCount + peacefullCount) || (mafiaCount >= peacefullCount && maniacCount == 0)) { // mafia win
-            *GameEnded = true;
-            TLogger::multiLog(LogPaths,
-                "Mafia win!!!"
-            );
-            WriteMsgByRole(
-                {
-                    {"announc", "Mafia win!!!"},
-                },
-                ERoles::Default
-            );
+            GameResult = "All dead";
+            return true;
+        } else if (mafiaCount + maniacCount == 0) {
+            GameResult = "Peacefull win!!!";
+            return true;
+        } else if (maniacCount == 1 && peacefullCount <= 1 && mafiaCount == 0) {
+            GameResult = "Maniac win!!!";
+            return true;
+        } else if ((mafiaCount > maniacCount + peacefullCount) || (mafiaCount >= peacefullCount && maniacCount == 0)) {
+            GameResult = "Mafia win!!!";
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    void TPlayerLeader::SayResult() {
+        TLogger::Log(GameResult);
+        WriteMsgByRole(
+            {
+                {"announc", GameResult}
+            },
+            ERoles::Default
+        );
     }
 }
 

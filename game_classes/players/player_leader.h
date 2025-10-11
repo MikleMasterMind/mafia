@@ -7,9 +7,7 @@ namespace NMafia {
     class TPlayerLeader : public TPlayerBase {
     public:
         TPlayerLeader(
-            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const std::vector<fs::path>& logPaths,
-            const TSharedPtr<bool> gameEnded
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr
         )
         : TPlayerBase(
             {
@@ -17,14 +15,16 @@ namespace NMafia {
                 ERoles::Leader,
             },
             TSharedPtr(new TMessagesQueue()),
-            idToPlayerPtr,
-            logPaths
+            idToPlayerPtr
           )
-        , GameEnded(gameEnded)
         {}
 
         virtual PlayerAction DayAction() override;
         virtual PlayerAction NigthAction() override;
+
+        void SayResult();
+
+        bool GameEnded();
 
     protected:
         virtual void ProcessSingleMessage(const TMessage& msg) override;
@@ -35,13 +35,11 @@ namespace NMafia {
         void ProcessManiacKill();
         void CleanDoctorHealing();
 
-        void CheckGameEnded();
-
     protected:
         std::unordered_map<Id, int> DayVoiteTable;
         std::unordered_map<Id, int> MafiaVoiteTable;
         Id TargetToKillForSheriff;
         Id TargetToKillForManiac;
-        TSharedPtr<bool> GameEnded;
+        std::string GameResult;
     };
 }

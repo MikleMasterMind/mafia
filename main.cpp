@@ -24,6 +24,10 @@ int main(int argc, char* argv[]) {
     }
 
     // Prepare game
+    if (args.DoLog) {
+        TLogger::SetEnable();
+        TLogger::SetLogFilePath("prepare");
+    }
     auto idToPlayer = TSharedPtr(new std::unordered_map<Id, TSharedPtr<TPlayerBase>>);
     std::vector<TSharedPtr<TPlayerBase>> players;
 
@@ -43,7 +47,6 @@ int main(int argc, char* argv[]) {
             case ERoles::Civilian:
                 userPlayer = TSharedPtr<TPlayerBase>(new TUserCivilian(
                     idToPlayer,
-                    {"logs/main.log", "logs/user.log"},
                     "./user_chat.txt"
                 ));
                 isUserCivilian = true;
@@ -51,7 +54,6 @@ int main(int argc, char* argv[]) {
             case ERoles::Doctor:
                 userPlayer = TSharedPtr<TPlayerBase>(new TUserDoctor(
                     idToPlayer,
-                    {"logs/main.log", "logs/user.log"},
                     "./user_chat.txt"
                 ));
                 isUserDoctor = true;
@@ -59,7 +61,6 @@ int main(int argc, char* argv[]) {
             case ERoles::Sheriff:
                 userPlayer = TSharedPtr<TPlayerBase>(new TUserSheriff(
                     idToPlayer,
-                    {"logs/main.log", "logs/user.log"},
                     "./user_chat.txt"
                 ));
                 isUserSheriff = true;
@@ -67,7 +68,6 @@ int main(int argc, char* argv[]) {
             case ERoles::Maniac:
                 userPlayer = TSharedPtr<TPlayerBase>(new TUserManiac(
                     idToPlayer,
-                    {"logs/main.log", "logs/user.log"},
                     "./user_chat.txt"
                 ));
                 isUserManiac = true;
@@ -75,7 +75,6 @@ int main(int argc, char* argv[]) {
             case ERoles::Mafia:
                 userPlayer = TSharedPtr<TPlayerBase>(new TUserMafia(
                     idToPlayer,
-                    {"logs/main.log", "logs/user.log"},
                     "./user_chat.txt"
                 ));
                 isUserMafia = true;
@@ -88,8 +87,7 @@ int main(int argc, char* argv[]) {
 
     #define INITIALIZE_PLAYER(class) \
         players.push_back(TSharedPtr<TPlayerBase>(new class( \
-            idToPlayer, \
-            {"logs/main.log"} \
+            idToPlayer \
         )));
 
     if (!isUserDoctor) {
@@ -116,13 +114,10 @@ int main(int argc, char* argv[]) {
 
     #undef INITIALIZE_PLAYER
 
-    auto gameEnded = TSharedPtr<bool>(new bool(false));
-    auto leader = TSharedPtr<TPlayerBase>(new TPlayerLeader(
-        idToPlayer,
-        {"logs/main.log"},
-        gameEnded
+    auto leader = TSharedPtr(new TPlayerLeader(
+        idToPlayer
     ));
-    players.push_back(leader);
+    players.push_back(TSharedPtr<TPlayerBase>(leader.get()));
 
     std::vector<std::thread> gameTreads;
     for (auto& player : players) {
@@ -131,14 +126,18 @@ int main(int argc, char* argv[]) {
     }
 
     // main loop
-    while (!*gameEnded) {
+    int day = 1;
+    while (!leader->GameEnded()) {
+        TLogger::SetLogFilePath("day_" + std::to_string(day));
+        ++day;
+
         auto nigthFuture = std::async(std::launch::async, [&]() {
             auto action = leader->NigthAction();
             action.handle.resume();
         });
         nigthFuture.get();
 
-        if (*gameEnded) {
+        if (leader->GameEnded()) {
             break;
         }
 
@@ -147,7 +146,11 @@ int main(int argc, char* argv[]) {
             action.handle.resume();
         });
         dayFuture.get();
+
     }
+
+    TLogger::SetLogFilePath("end");
+    leader->SayResult();
 
 
     // finish
@@ -158,6 +161,6 @@ int main(int argc, char* argv[]) {
     for (auto& thread : gameTreads) {
         thread.join();
     }
-    TLogger::destroyAll();
+    TLogger::Destroy();
     return 0;
 }

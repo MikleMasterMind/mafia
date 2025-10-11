@@ -26,7 +26,7 @@ namespace NMafia {
 
     void TPlayerSheriff::Kill() {
         auto target = ChooseTargetToKill();
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Sheriff wants to kill " + target->GetId()
         );
         WriteMsgByRole(
@@ -45,7 +45,7 @@ namespace NMafia {
             return;
         }
         CheckedIds.insert(target->GetId());
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Sheriff " + GetId() + " checks " + target->GetId()
         );
         if (IsMafia(target->GetId())) {
@@ -53,7 +53,7 @@ namespace NMafia {
         } else {
             TrustTable[target->GetId()] += 50;
         }
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Sheriff " + GetId() + " now trust to " + target->GetId() + " like " + std::to_string(TrustTable[target->GetId()])
         );
     }

@@ -7,12 +7,10 @@ namespace NMafia {
     class TPlayerDoctor : public virtual TPlayerPlayable {
     public:
         TPlayerDoctor(
-            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const std::vector<fs::path>& logPaths
+            const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr
         )
         : TPlayerPlayable(
             idToPlayerPtr,
-            logPaths,
             {
                 ERoles::Default,
                 ERoles::Peacefull,

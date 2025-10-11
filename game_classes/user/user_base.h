@@ -15,13 +15,11 @@ namespace NMafia {
     public:
         TUserBase(
             const TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayerPtr,
-            const std::vector<fs::path>& logPaths,
             const std::set<ERoles>& roles,
             const fs::path& messageFilePath
         )
             : TPlayerPlayable(
                 idToPlayerPtr,
-                logPaths,
                 roles
             )
             , MessageFile(messageFilePath)

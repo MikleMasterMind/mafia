@@ -37,7 +37,7 @@ namespace NMafia {
             ERoles::Default
         );
 
-        TLogger::multiLog(LogPaths,
+        TLogger::Log(
             "Player " + GetId() + " voite again " + target->GetId()
         );
     }
