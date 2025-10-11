@@ -17,6 +17,12 @@
 
 using namespace NMafia;
 
+
+template<PlayerBaseConcept T>
+TSharedPtr<TPlayerBase> InitializePlayer(TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayer) {
+    return TSharedPtr<TPlayerBase>(new T(idToPlayer));
+}
+
 int main(int argc, char* argv[]) {
     auto args = ParseArgs(argc, argv);
     if (!args.Filled) {
@@ -85,34 +91,27 @@ int main(int argc, char* argv[]) {
         players.push_back(userPlayer);
     }
 
-    #define INITIALIZE_PLAYER(class) \
-        players.push_back(TSharedPtr<TPlayerBase>(new class( \
-            idToPlayer \
-        )));
-
     if (!isUserDoctor) {
-        INITIALIZE_PLAYER(TPlayerDoctor);
+        players.push_back(InitializePlayer<TPlayerDoctor>(idToPlayer));
     }
     if (!isUserSheriff) {
-        INITIALIZE_PLAYER(TPlayerSheriff);
+        players.push_back(InitializePlayer<TPlayerSheriff>(idToPlayer));
     }
     if (!isUserManiac) {
-        INITIALIZE_PLAYER(TPlayerManiac);
+        players.push_back(InitializePlayer<TPlayerManiac>(idToPlayer));
     }
     if (isUserCivilian) {
         --civilianCount;
     }
     for (int i = 0; i < civilianCount; ++i) {
-        INITIALIZE_PLAYER(TPlayerCivilian);
+        players.push_back(InitializePlayer<TPlayerCivilian>(idToPlayer));
     }
     if (isUserMafia) {
         --mafiaCount;
     }
     for (int i = 0; i < mafiaCount; ++i) {
-        INITIALIZE_PLAYER(TPlayerMafia);
+        players.push_back(InitializePlayer<TPlayerMafia>(idToPlayer));
     }
-
-    #undef INITIALIZE_PLAYER
 
     auto leader = TSharedPtr(new TPlayerLeader(
         idToPlayer
@@ -120,7 +119,7 @@ int main(int argc, char* argv[]) {
     players.push_back(TSharedPtr<TPlayerBase>(leader.get()));
 
     std::vector<std::thread> gameTreads;
-    for (auto& player : players) {
+    for (const auto& player : players) {
         (*idToPlayer)[player->GetId()] = player;
         gameTreads.push_back(std::thread([&]() { player->StartProcessing(); }));
     }

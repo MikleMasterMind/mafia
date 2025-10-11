@@ -5,6 +5,7 @@
 #include <set>
 #include <unordered_map>
 #include <coroutine>
+#include <concepts>
 #include "../library/roles_enum.h"
 #include "../library/message_reader.h"
 #include "../library/message_writer.h"
@@ -14,6 +15,41 @@
 
 
 namespace NMafia {
+    enum EStatus {
+        Alive,
+        Protected,
+        Dead,
+        Excluded,
+    };
+
+    template<typename T>
+    concept ValidRoles = requires(T obj) {
+        { obj.GetRoles() } -> std::convertible_to<std::set<ERoles>>;
+    };
+
+    template<typename T>
+    concept ValidId = requires(T obj) {
+        { obj.GetId() } -> std::convertible_to<Id>;
+    };
+
+    template<typename T>
+    concept ValidStatus = requires(T obj) {
+        { obj.GetStatus() } -> std::convertible_to<EStatus>;
+        { obj.SetStatus(EStatus::Alive) };
+    };
+
+    template<typename T>
+    concept MessageHandling = requires(T obj) {
+        { obj.GetChat() } -> std::convertible_to<TSharedPtr<TMessagesQueue>>;
+    };
+
+    template<typename T>
+    concept PlayerBaseConcept =
+        ValidRoles<T> &&
+        ValidId<T> &&
+        ValidStatus<T> &&
+        MessageHandling<T>;
+
     struct PlayerAction {
         struct promise_type {
             PlayerAction get_return_object() {
@@ -26,13 +62,6 @@ namespace NMafia {
         };
         std::coroutine_handle<promise_type> handle;
         ~PlayerAction() { handle.destroy(); }
-    };
-
-    enum EStatus {
-        Alive,
-        Protected,
-        Dead,
-        Excluded,
     };
 
     class TPlayerBase : public TMessageReader, public TMessageWriter {
