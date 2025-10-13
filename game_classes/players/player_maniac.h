@@ -13,7 +13,6 @@ namespace NMafia {
             idToPlayerPtr,
             {
                 ERoles::Default,
-                ERoles::Peacefull,
                 ERoles::Maniac,
             }
         ) {}

@@ -130,7 +130,6 @@ namespace NMafia {
 
         bool IsLeader(Id id);
         bool IsInGame(Id id);
-        bool IsAlive(Id id);
         bool IsMafia(Id id);
 
         virtual std::string GetStatistic() const;

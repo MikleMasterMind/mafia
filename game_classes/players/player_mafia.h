@@ -20,9 +20,9 @@ namespace NMafia {
         virtual PlayerAction NigthAction() override;
 
     protected:
-        void MafiaVoite();
-        virtual TSharedPtr<TPlayerBase> ChooseTargetToMafiaVoite();
+        void MafiaVote();
+        virtual TSharedPtr<TPlayerBase> ChooseTargetToMafiaVote();
 
-        virtual TSharedPtr<TPlayerBase> ChooseTargretToVoite() override;
+        virtual TSharedPtr<TPlayerBase> ChooseTargretToVote() override;
     };
 }

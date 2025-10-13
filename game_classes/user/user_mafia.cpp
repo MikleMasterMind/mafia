@@ -17,19 +17,18 @@ namespace NMafia {
         return TPlayerMafia::NigthAction();
     }
 
-    TSharedPtr<TPlayerBase> TUserMafia::ChooseTargetToMafiaVoite() {
+    TSharedPtr<TPlayerBase> TUserMafia::ChooseTargetToMafiaVote() {
         std::vector<Id> ids;
         std::ranges::copy(
             *IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
                 return (!IsLeader(id))
                     && (IsInGame(id))
-                    && (IsAlive(id))
                     && (!IsMafia(id));
             }),
             std::back_inserter(ids)
         );
 
-        std::cout << "Choose player to voite as mafia:" << std::endl;
+        std::cout << "Choose player to vote as mafia:" << std::endl;
         for (size_t i = 0; i < ids.size(); ++i) {
             std::cout << "Player " << ids[i] << std::endl;
         }

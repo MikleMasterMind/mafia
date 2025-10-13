@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <utility>
 #include <mutex>
+#include <atomic>
+#include <memory>
 
 namespace NMafia {
     template <typename T>
@@ -16,52 +18,27 @@ namespace NMafia {
 
         explicit TSharedPtr(T* ptr)
             : ptr_(ptr)
-            , ref_count_(ptr ? new size_t(1) : nullptr)
+            , ref_count_(ptr ? new std::atomic<size_t>(1) : nullptr)
         {
         }
 
-        TSharedPtr(const TSharedPtr& other) noexcept
-            : ptr_(other.ptr_)
-            , ref_count_(other.ref_count_)
-        {
+        TSharedPtr(const TSharedPtr& other) noexcept {
+            std::lock_guard<std::mutex> lock(other.mutex_);
+            ptr_ = other.ptr_;
+            ref_count_ = other.ref_count_;
             if (ref_count_) {
-                std::lock_guard<std::mutex> lock(mutex_);
                 ++(*ref_count_);
             }
         }
 
-        TSharedPtr(TSharedPtr&& other) noexcept
-            : ptr_(other.ptr_)
-            , ref_count_(other.ref_count_)
-        {
-            other.ptr_ = nullptr;
-            other.ref_count_ = nullptr;
-        }
-
-        ~TSharedPtr() {
+        ~TSharedPtr() noexcept {
             release();
         }
 
         TSharedPtr& operator=(const TSharedPtr& other) noexcept {
             if (this != &other) {
-                release();
-                ptr_ = other.ptr_;
-                ref_count_ = other.ref_count_;
-                if (ref_count_) {
-                    std::lock_guard<std::mutex> lock(mutex_);
-                    ++(*ref_count_);
-                }
-            }
-            return *this;
-        }
-
-        TSharedPtr& operator=(TSharedPtr&& other) noexcept {
-            if (this != &other) {
-                release();
-                ptr_ = other.ptr_;
-                ref_count_ = other.ref_count_;
-                other.ptr_ = nullptr;
-                other.ref_count_ = nullptr;
+                TSharedPtr temp(other);
+                swap(temp);
             }
             return *this;
         }
@@ -83,7 +60,6 @@ namespace NMafia {
         }
 
         size_t use_count() const noexcept {
-            std::lock_guard<std::mutex> lock(mutex_);
             return ref_count_ ? *ref_count_ : 0;
         }
 
@@ -94,36 +70,33 @@ namespace NMafia {
         }
 
         void reset(T* ptr) {
-            if (ptr_ == ptr) {
-                return;
+            if (ptr_ != ptr) {
+                release();
+                ptr_ = ptr;
+                ref_count_ = ptr ? new std::atomic<size_t>(1) : nullptr;
             }
-            release();
-            ptr_ = ptr;
-            ref_count_ = ptr ? new size_t(1) : nullptr;
         }
 
         void swap(TSharedPtr& other) noexcept {
-            std::lock_guard<std::mutex> lock(mutex_);
-            using std::swap;
-            swap(ptr_, other.ptr_);
-            swap(ref_count_, other.ref_count_);
+            std::swap(ptr_, other.ptr_);
+            std::swap(ref_count_, other.ref_count_);
         }
 
     private:
         void release() {
             if (ref_count_) {
-                std::lock_guard<std::mutex> lock(mutex_);
-                --(*ref_count_);
-                if (*ref_count_ == 0) {
+                if (--(*ref_count_) == 0) {
                     delete ptr_;
                     delete ref_count_;
+                    ptr_ = nullptr;
+                    ref_count_ = nullptr;
                 }
             }
         }
 
     private:
         T* ptr_;
-        size_t* ref_count_;
+        std::atomic<size_t>* ref_count_;
         mutable std::mutex mutex_;
     };
 
@@ -157,31 +130,7 @@ namespace NMafia {
         return rhs.get() != nullptr;
     }
 
-    template <typename T, typename U>
-    bool operator<(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
-        return lhs.get() < rhs.get();
-    }
-
-    template <typename T, typename U>
-    bool operator>(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
-        return rhs < lhs;
-    }
-
-    template <typename T, typename U>
-    bool operator<=(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
-        return !(rhs < lhs);
-    }
-
-    template <typename T, typename U>
-    bool operator>=(const TSharedPtr<T>& lhs, const TSharedPtr<U>& rhs) {
-        return !(lhs < rhs);
-    }
-
-    template <typename T>
-    void swap(TSharedPtr<T>& lhs, TSharedPtr<T>& rhs) noexcept {
-        lhs.swap(rhs);
-    }
-
+    // Функция создания shared_ptr
     template <typename T, typename... Args>
     TSharedPtr<T> make_shared(Args&&... args) {
         return TSharedPtr<T>(new T(std::forward<Args>(args)...));

@@ -5,30 +5,31 @@
 
 namespace NMafia {
     PlayerAction TPlayerMafia::NigthAction() {
-        MafiaVoite();
+        MafiaVote();
         co_return;
     }
 
-    void TPlayerMafia::MafiaVoite() {
-        auto target = ChooseTargetToMafiaVoite();
+    void TPlayerMafia::MafiaVote() {
+        auto target = ChooseTargetToMafiaVote();
         for (const auto& role : {ERoles::Leader, ERoles::Mafia}) {
             WriteMsgByRole(
                 {
-                    {"message", "Mafia voite again"},
+                    {"message", "Mafia vote again"},
                     {"id", target->GetId()},
                 },
                 role
             );
         }
         TLogger::Log(
-            "Player " + GetId() + " voite as mafia again " + target->GetId()
+            "Player " + GetId() + " vote as mafia again " + target->GetId()
         );
     }
 
-    TSharedPtr<TPlayerBase> TPlayerMafia::ChooseTargetToMafiaVoite() {
+    TSharedPtr<TPlayerBase> TPlayerMafia::ChooseTargetToMafiaVote() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
-                return id != GetId();
+                return (id != GetId()
+                    && (!IsMafia(id)));
             }),
             std::back_inserter(ids)
         );
@@ -46,8 +47,7 @@ namespace NMafia {
                 return (TrustTable[id] <= threshold)
                     && (!IsLeader(id))
                     && (IsInGame(id))
-                    && (IsAlive(id))
-                    && (!IsMafia(id));
+                    && (IsInGame(id));
             }),
             std::back_inserter(billKill)
         );
@@ -64,12 +64,11 @@ namespace NMafia {
         return IdToPlayerPtr->at(choosenId);
     }
 
-    TSharedPtr<TPlayerBase> TPlayerMafia::ChooseTargretToVoite() {
+    TSharedPtr<TPlayerBase> TPlayerMafia::ChooseTargretToVote() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
                 return (id != GetId()
                     && (!IsLeader(id))
-                    && (IsAlive(id))
                     && (!IsMafia(id)));
             }),
             std::back_inserter(ids)
@@ -77,6 +76,10 @@ namespace NMafia {
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {
+                std::lock_guard lock(TrustTableMutex);
+                if (TrustTable.find(id) == TrustTable.end()) {
+                    TrustTable[id] = 0;
+                }
                 return TrustTable[id];
             })
         );

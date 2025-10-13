@@ -20,6 +20,7 @@ namespace NMafia {
             for (const auto& [id, player] : *IdToPlayerPtr) {
                 auto roles = player->GetRoles();
                 if (roles.find(ERoles::Leader) == roles.end()) {
+                    std::lock_guard lock(TrustTableMutex);
                     TrustTable[id] = 0;
                 }
             }
@@ -30,12 +31,13 @@ namespace NMafia {
         virtual PlayerAction DayAction() override;
 
     protected:
-        virtual void Voite();
-        virtual TSharedPtr<TPlayerBase> ChooseTargretToVoite();
+        virtual void Vote();
+        virtual TSharedPtr<TPlayerBase> ChooseTargretToVote();
 
         virtual void ProcessSingleMessage(const TMessage& msg) override;
 
     protected:
         std::unordered_map<Id, int> TrustTable;
+        std::mutex TrustTableMutex;
     };
 }

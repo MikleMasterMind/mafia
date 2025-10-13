@@ -43,11 +43,11 @@ namespace NMafia {
             TUserBase::ProcessSingleMessage(msg);
         }
 
-        void Voite() override {
-            TUserBase::Voite();
+        void Vote() override {
+            TUserBase::Vote();
         }
 
-        TSharedPtr<TPlayerBase> ChooseTargetToMafiaVoite() override;
+        TSharedPtr<TPlayerBase> ChooseTargetToMafiaVote() override;
 
     protected:
         bool FirstNigth;

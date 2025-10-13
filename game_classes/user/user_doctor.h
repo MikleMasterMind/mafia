@@ -43,8 +43,8 @@ namespace NMafia {
             TUserBase::ProcessSingleMessage(msg);
         }
 
-        void Voite() override {
-            TUserBase::Voite();
+        void Vote() override {
+            TUserBase::Vote();
         }
 
         virtual TSharedPtr<TPlayerBase> ChooseTargetToHeal() override;

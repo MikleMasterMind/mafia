@@ -20,7 +20,9 @@ using namespace NMafia;
 
 template<PlayerBaseConcept T>
 TSharedPtr<TPlayerBase> InitializePlayer(TSharedPtr<std::unordered_map<Id, TSharedPtr<TPlayerBase>>>& idToPlayer) {
-    return TSharedPtr<TPlayerBase>(new T(idToPlayer));
+    auto player = TSharedPtr<TPlayerBase>(new T(idToPlayer));
+    (*idToPlayer)[player->GetId()] = player;
+    return player;
 }
 
 int main(int argc, char* argv[]) {
@@ -121,11 +123,14 @@ int main(int argc, char* argv[]) {
     std::vector<std::thread> gameTreads;
     for (const auto& player : players) {
         (*idToPlayer)[player->GetId()] = player;
-        gameTreads.push_back(std::thread([&]() { player->StartProcessing(); }));
+        auto thread = std::thread([&]() { player->StartProcessing(); });
+        thread.detach();
+        gameTreads.push_back(std::move(thread));
     }
 
     // main loop
     int day = 1;
+    leader->CountPlayers();
     while (!leader->GameEnded()) {
         TLogger::SetLogFilePath("day_" + std::to_string(day));
         ++day;
@@ -159,9 +164,6 @@ int main(int argc, char* argv[]) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     for (auto& player : players) {
         player->StopProcessing();
-    }
-    for (auto& thread : gameTreads) {
-        thread.join();
     }
     TLogger::Destroy();
     return 0;

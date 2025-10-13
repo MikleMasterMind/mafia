@@ -26,6 +26,9 @@ namespace NMafia {
 
     void TPlayerSheriff::Kill() {
         auto target = ChooseTargetToKill();
+        if (!target) {
+            return;
+        }
         TLogger::Log(
             "Sheriff wants to kill " + target->GetId()
         );
@@ -64,7 +67,7 @@ namespace NMafia {
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const auto& id) {
                 return ((id != GetId())
                     && (!IsLeader(id))
-                    && (IsAlive(id))
+                    && (IsInGame(id))
                     && (CheckedIds.find(id) == CheckedIds.end()));
             }),
             std::back_inserter(ids)

@@ -25,7 +25,7 @@ namespace NMafia {
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
                 return (!IsLeader(id))
                     && (IsInGame(id))
-                    && (IsAlive(id));
+                    && (id != PrevPacientId);
                 }),
             std::back_inserter(ids)
         );
@@ -33,9 +33,7 @@ namespace NMafia {
         std::random_device rd;
         std::mt19937 gen(rd());
         Id choosenId = ids[std::uniform_int_distribution<>(0, ids.size() - 1)(gen)];
-        while (PrevPacientId.size() != 0 && PrevPacientId != choosenId) {
-            choosenId = ids[std::uniform_int_distribution<>(0, ids.size() - 1)(gen)];
-        }
+        choosenId = ids[std::uniform_int_distribution<>(0, ids.size() - 1)(gen)];
         PrevPacientId = choosenId;
 
         return IdToPlayerPtr->at(choosenId);

@@ -8,36 +8,40 @@
 
 namespace NMafia {
     PlayerAction NMafia::TPlayerPlayable::DayAction() {
-        Voite();
+        Vote();
         co_return;
     }
 
-    void TPlayerPlayable::Voite() {
-        auto target = ChooseTargretToVoite();
+    void TPlayerPlayable::Vote() {
+        auto target = ChooseTargretToVote();
         WriteMsgByRole(
             {
-                {"message", "Voite again"},
+                {"message", "Vote again"},
                 {"id", target->GetId()},
             },
             ERoles::Default
         );
         TLogger::Log(
-            "Player " + GetId() + " voite again " + target->GetId()
+            "Player " + GetId() + " vote again " + target->GetId()
         );
     }
 
-    TSharedPtr<TPlayerBase> TPlayerPlayable::ChooseTargretToVoite() {
+    TSharedPtr<TPlayerBase> TPlayerPlayable::ChooseTargretToVote() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
                 return (id != GetId()
                     && (!IsLeader(id))
-                    && (IsAlive(id)));
+                    && (IsInGame(id)));
             }),
             std::back_inserter(ids)
         );
 
         int minTrust = std::ranges::min(
             ids | std::views::transform([this](const Id& id) {
+                std::lock_guard lock(TrustTableMutex);
+                if (TrustTable.find(id) == TrustTable.end()) {
+                    return 0;
+                }
                 return TrustTable[id];
             })
         );
@@ -67,9 +71,13 @@ namespace NMafia {
         // TLogger::Log(
         //     "Player " + GetId() + " got message " + msg.Body.ToString() + " from " + msg.Src
         // );
-        if (msg.Body.GetOrNull("message") == "Voite again") {
+        if (msg.Body.GetOrNull("message") == "Vote again") {
             Id extractedId = msg.Body.Get("id");
             if (extractedId == GetId()) {
+                std::lock_guard lock(TrustTableMutex);
+                if (TrustTable.find(msg.Src) == TrustTable.end()) {
+                    TrustTable[msg.Src] = 0;
+                }
                 TrustTable[msg.Src] -= 5;
                 TLogger::Log(
                     "Player " + GetId() + " now trust to " + msg.Src + " like " + std::to_string(TrustTable[msg.Src])

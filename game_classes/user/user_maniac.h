@@ -14,7 +14,6 @@ namespace NMafia {
             idToPlayerPtr,
             {
                 ERoles::Default,
-                ERoles::Peacefull,
                 ERoles::Maniac,
                 ERoles::User,
             },
@@ -26,7 +25,6 @@ namespace NMafia {
             idToPlayerPtr,
             {
                 ERoles::Default,
-                ERoles::Peacefull,
                 ERoles::Maniac,
                 ERoles::User,
             }
@@ -43,8 +41,8 @@ namespace NMafia {
             TUserBase::ProcessSingleMessage(msg);
         }
 
-        void Voite() override {
-            TUserBase::Voite();
+        void Vote() override {
+            TUserBase::Vote();
         }
 
         virtual TSharedPtr<TPlayerBase> ChooseTargetToKill() override;

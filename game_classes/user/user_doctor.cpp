@@ -8,10 +8,12 @@ namespace NMafia {
     TSharedPtr<TPlayerBase> TUserDoctor::ChooseTargetToHeal() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
-            return (!IsLeader(id)
-                && (IsAlive(id))
-                && (id != GetId()));
-        }), std::back_inserter(ids));
+                return (!IsLeader(id)
+                    && (IsInGame(id))
+                    && (id != GetId()));
+            }),
+            std::back_inserter(ids)
+        );
 
         std::cout << "Choose player to heal:" << std::endl;
         for (size_t i = 0; i < ids.size(); ++i) {

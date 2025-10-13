@@ -31,11 +31,6 @@ namespace NMafia {
         return IdToPlayerPtr->at(id)->GetStatus() != EStatus::Excluded;
     }
 
-    bool TPlayerBase::IsAlive(Id id) {
-        auto status = IdToPlayerPtr->at(id)->GetStatus();
-        return  (status == EStatus::Alive) || (status == EStatus::Protected);
-    }
-
     bool TPlayerBase::IsMafia(Id id) {
         auto roles = IdToPlayerPtr->at(id)->GetRoles();
         return roles.find(ERoles::Mafia) != roles.end();

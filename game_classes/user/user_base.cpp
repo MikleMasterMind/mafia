@@ -6,17 +6,17 @@
 #include <algorithm>
 
 namespace NMafia {
-    void TUserBase::Voite() {
+    void TUserBase::Vote() {
         std::vector<Id> ids;
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const auto& id) {
                 return ((id != GetId())
-                    && (IsAlive(id))
+                    && (IsInGame(id))
                     && (!IsLeader(id)));
                 }),
             std::back_inserter(ids)
         );
 
-        std::cout << "Choose player to voite again:" << std::endl;
+        std::cout << "Choose player to vote again:" << std::endl;
         for (size_t i = 0; i < ids.size(); ++i) {
             std::cout << "Player " << ids[i] << std::endl;
         }
@@ -31,14 +31,14 @@ namespace NMafia {
 
         WriteMsgByRole(
             {
-                {"message", "Voite again"},
+                {"message", "Vote again"},
                 {"id", target->GetId()}
             },
             ERoles::Default
         );
 
         TLogger::Log(
-            "Player " + GetId() + " voite again " + target->GetId()
+            "Player " + GetId() + " vote again " + target->GetId()
         );
     }
 
@@ -50,9 +50,9 @@ namespace NMafia {
         if (IsLeader(msg.Src)) {
             messageStr = "=========\nFrom leader " + msg.Src + ": " + msg.Body.GetOrNull("announc") + "\n=========";
         } else {
-            if (msg.Body.GetOrNull("message") == "Voite again") {
+            if (msg.Body.GetOrNull("message") == "Vote again") {
                 auto targetId = msg.Body.Get("id") == GetId() ? "you" : msg.Body.Get("id");
-                messageStr = "Player " + msg.Src + " voite again " + targetId;
+                messageStr = "Player " + msg.Src + " vote again " + targetId;
             } else {
                 messageStr = "From player " + msg.Src + ": " + msg.Body.ToString();
             }

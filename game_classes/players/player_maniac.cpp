@@ -27,8 +27,7 @@ namespace NMafia {
         std::ranges::copy(*IdToPlayerPtr | std::views::keys | std::views::filter([this](const Id& id) {
                 return (id != GetId())
                     && (!IsLeader(id))
-                    && (IsInGame(id))
-                    && (IsAlive(id));
+                    && (IsInGame(id));
             }),
             std::back_inserter(ids)
         );

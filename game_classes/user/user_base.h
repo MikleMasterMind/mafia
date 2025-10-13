@@ -52,7 +52,7 @@ namespace NMafia {
         }
 
     protected:
-        void Voite() override;
+        void Vote() override;
 
         void ProcessSingleMessage(const TMessage& msg) override;
 

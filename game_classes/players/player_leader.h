@@ -24,22 +24,27 @@ namespace NMafia {
 
         void SayResult();
 
+        void CountPlayers();
+
         bool GameEnded();
 
     protected:
         virtual void ProcessSingleMessage(const TMessage& msg) override;
 
-        void ProcessDayVoiting();
-        void ProcessMafiaVoiting();
+        void ProcessDayVoting();
+        void ProcessMafiaVoting();
         void ProcessSheriffKill();
         void ProcessManiacKill();
         void CleanDoctorHealing();
 
     protected:
-        std::unordered_map<Id, int> DayVoiteTable;
-        std::unordered_map<Id, int> MafiaVoiteTable;
+        std::unordered_map<Id, int> DayVoteTable;
+        std::unordered_map<Id, int> MafiaVoteTable;
         Id TargetToKillForSheriff;
         Id TargetToKillForManiac;
         std::string GameResult;
+        int PeacefullCount;
+        int MafiaCount;
+        int ManiacCount;
     };
 }

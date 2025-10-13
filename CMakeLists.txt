@@ -4,9 +4,22 @@ project(mafia LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(USE_SANITIZER "Enable sanitizer" ON)
+if(USE_SANITIZER)
+    set(SANITIZER_FLAG1 "-fsanitize=address")
+    set(SANITIZER_FLAG2 "-g")
+    add_compile_options(${SANITIZER_FLAG1})
+    add_compile_options(${SANITIZER_FLAG2})
+    add_link_options(${SANITIZER_FLAG1})
+    add_link_options(${SANITIZER_FLAG2})
+    message(STATUS "Sanitizer enabled with flags: ${SANITIZER_FLAGS}")
+else()
+    message(STATUS "Sanitizer disabled")
+endif()
+
 add_compile_options(-std=c++20)
 
-add_executable(mafia
+add_executable(main
     main.cpp
     library/shared_ptr/shared_ptr.cpp
     library/unique_number_generator/unique_number_generator.cpp
