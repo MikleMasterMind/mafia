@@ -3,5 +3,6 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 .vscode
-mafia
+main
+user_chat.txt
 logs/*

@@ -63,6 +63,7 @@ namespace NMafia {
     PlayerAction TPlayerLeader::DayAction() {
         DO_ALL_PLAYERS_ACTIONS(DayAction);
         ProcessDayVoting();
+        CleanDoctorHealing();
         co_return;
     }
 

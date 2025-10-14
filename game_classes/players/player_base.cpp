@@ -40,10 +40,19 @@ namespace NMafia {
         std::stringstream stats;
         stats << "------------------------------------------------\n";
         stats << "ID: " << GetId() << "\n";
-        stats << "Status: " <<
-            (Status == EStatus::Alive ? "Alive" :
-              (Status == EStatus::Dead ? "Dead" : "Excluded")) << "\n";
+        stats << "Status: " <<  StatusToString(GetStatus()) << std::endl;
         stats << "Roles: " << RolesToString(GetRoles()) << "\n";
         return stats.str();
+    }
+
+    std::string StatusToString(EStatus status)  {
+        switch (status)
+        {
+            case EStatus::Alive: return "Alive";
+            case EStatus::Protected: return "Alive";
+            case EStatus::Dead: return "Dead";
+            case EStatus::Excluded: return "Dead";
+            default: return "Unknown";
+        }
     }
 }

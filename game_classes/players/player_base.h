@@ -22,6 +22,8 @@ namespace NMafia {
         Excluded,
     };
 
+    std::string StatusToString(EStatus status);
+
     template<typename T>
     concept ValidRoles = requires(T obj) {
         { obj.GetRoles() } -> std::convertible_to<std::set<ERoles>>;
@@ -76,6 +78,7 @@ namespace NMafia {
             , Roles(roles)
             , IdToPlayerPtr(idToPlayerPtr)
             , PersonId(std::to_string(UniqueNumberGenerator::getInstance().getUniqueNumber()))
+            , Status(EStatus::Alive)
         {
             TLogger::Log(
                 "Initialize player role: " + RolesToString(GetRoles()) + " Id: " + GetId()
